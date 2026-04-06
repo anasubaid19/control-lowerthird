@@ -19,7 +19,7 @@ export default async function handler(req, res) {
         fetch(`${baseUrl}/set/lt-state`, {
           method:  'POST',
           headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-          body:    JSON.stringify(JSON.stringify(body.state)),
+          body:    JSON.stringify(body.state),
         })
       );
     }
@@ -30,7 +30,7 @@ export default async function handler(req, res) {
         fetch(`${baseUrl}/set/lt-style`, {
           method:  'POST',
           headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-          body:    JSON.stringify(JSON.stringify(body.style)),
+          body:    JSON.stringify(body.style),
         })
       );
     }
@@ -41,7 +41,7 @@ export default async function handler(req, res) {
         fetch(`${baseUrl}/set/lt-entries`, {
           method:  'POST',
           headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-          body:    JSON.stringify(JSON.stringify(body.entries)),
+          body:    JSON.stringify(body.entries),
         })
       );
     }
