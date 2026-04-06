@@ -18,13 +18,26 @@ export default async function handler(req, res) {
     const styleJson   = await styleRes.json();
     const entriesJson = await entriesRes.json();
 
-    const state   = stateJson.result   ? JSON.parse(stateJson.result)   : { visible: false, nama: '', jabatan: '' };
-    const style   = styleJson.result   ? JSON.parse(styleJson.result)   : defaultStyle();
-    const entries = entriesJson.result ? JSON.parse(entriesJson.result) : defaultEntries();
+    const state   = safeParse(stateJson.result,   { visible: false, nama: '', jabatan: '' });
+    const style   = safeParse(styleJson.result,   defaultStyle());
+    const entries = safeParse(entriesJson.result, defaultEntries());
 
     return res.status(200).json({ state, style, entries });
   } catch (err) {
     return res.status(500).json({ error: err.message });
+  }
+}
+
+// Handle nilai yang mungkin single atau double encoded
+function safeParse(raw, fallback) {
+  if (!raw) return fallback;
+  try {
+    const first = JSON.parse(raw);
+    // Jika hasilnya masih string, parse sekali lagi (data lama double-encoded)
+    if (typeof first === 'string') return JSON.parse(first);
+    return first;
+  } catch(e) {
+    return fallback;
   }
 }
 
