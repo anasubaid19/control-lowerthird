@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <title>Lower Third Overlay</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=DM+Sans:wght@300;400;600;700&family=Plus+Jakarta+Sans:wght@300;400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
 
@@ -11,7 +13,6 @@
     height: 1080px;
     background: transparent;
     overflow: hidden;
-    font-family: 'Segoe UI', 'Outfit', sans-serif;
   }
 
   #lt-wrapper {
@@ -20,12 +21,11 @@
     pointer-events: none;
   }
 
-  /* Uncomment dan ganti src jika pakai gambar lower third */
-  /* #lt-image {
+  #lt-image {
     position: absolute;
     bottom: 0; left: 0;
     width: 100%; height: auto;
-  } */
+  }
 
   #lt-text {
     position: absolute;
@@ -38,6 +38,7 @@
     white-space: nowrap;
     text-shadow: 0 1px 6px rgba(0,0,0,0.5);
     line-height: 1.2;
+    display: block;
   }
 
   /* Animasi muncul */
@@ -59,7 +60,7 @@
 </head>
 <body>
 <div id="lt-wrapper">
-  <!-- <img id="lt-image" src="lower_third.png"> -->
+  <img id="lt-image" src="/lowerthird.png">
   <div id="lt-text" class="hidden">
     <div id="lt-nama"></div>
     <div id="lt-jabatan"></div>
@@ -79,63 +80,59 @@
       if (!res.ok) return;
       const { state } = await res.json();
       if (!state) return;
-
       const key = JSON.stringify(state);
       if (key === lastKey) return;
       lastKey = key;
-
       applyState(state);
     } catch(e) {}
   }
 
   function applyState(s) {
-    // Posisi & style
     ltText.style.left        = (s.posX ?? 285) + 'px';
     ltText.style.bottom      = (s.posY ?? 308) + 'px';
-    ltNama.style.fontSize    = (s.namaSize    ?? 38) + 'px';
-    ltJabatan.style.fontSize = (s.jabatanSize ?? 26) + 'px';
-    ltNama.style.color       = s.namaColor    || '#ffffff';
-    ltJabatan.style.color    = s.jabatanColor || '#e0f0ff';
+    ltText.style.gap         = (s.gap  ?? 4)   + 'px';
 
-    const namaChanged    = ltNama.textContent    !== (s.nama    || '');
-    const jabatanChanged = ltJabatan.textContent !== (s.jabatan || '');
-    const textChanged    = namaChanged || jabatanChanged;
+    const font = s.fontFamily || 'Outfit';
+    ltNama.style.fontSize    = (s.namaSize    ?? 38)  + 'px';
+    ltNama.style.fontWeight  =  s.namaWeight  || '700';
+    ltNama.style.color       =  s.namaColor   || '#ffffff';
+    ltNama.style.fontFamily  = `'${font}', sans-serif`;
+
+    ltJabatan.style.fontSize    = (s.jabatanSize   ?? 26)  + 'px';
+    ltJabatan.style.fontWeight  =  s.jabatanWeight || '300';
+    ltJabatan.style.color       =  s.jabatanColor  || '#e0f0ff';
+    ltJabatan.style.fontFamily  = `'${font}', sans-serif`;
+
+    const textChanged = ltNama.textContent !== (s.nama||'') || ltJabatan.textContent !== (s.jabatan||'');
 
     if (!s.visible) {
-      // Sembunyikan dengan animasi
       if (!ltText.classList.contains('hidden')) {
         ltText.classList.remove('animating-in');
         ltText.classList.add('animating-out');
-        setTimeout(() => {
-          ltText.classList.add('hidden');
-          ltText.classList.remove('animating-out');
-        }, 320);
+        setTimeout(() => { ltText.classList.add('hidden'); ltText.classList.remove('animating-out'); }, 320);
       }
       return;
     }
 
     if (ltText.classList.contains('hidden') || textChanged) {
-      // Tampilkan / ganti teks dengan animasi
       if (textChanged && !ltText.classList.contains('hidden')) {
-        // Fade out dulu lalu ganti
         ltText.classList.remove('animating-in');
         ltText.classList.add('animating-out');
         setTimeout(() => {
           ltNama.textContent    = s.nama    || '';
           ltJabatan.textContent = s.jabatan || '';
-          ltText.classList.remove('animating-out', 'hidden');
+          ltText.classList.remove('animating-out','hidden');
           ltText.classList.add('animating-in');
         }, 320);
       } else {
         ltNama.textContent    = s.nama    || '';
         ltJabatan.textContent = s.jabatan || '';
-        ltText.classList.remove('hidden', 'animating-out');
+        ltText.classList.remove('hidden','animating-out');
         ltText.classList.add('animating-in');
       }
     }
   }
 
-  // Poll tiap 800ms — cukup responsif tanpa membebani Redis free tier
   setInterval(poll, 800);
   poll();
 </script>
