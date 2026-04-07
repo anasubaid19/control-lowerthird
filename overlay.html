@@ -4,64 +4,52 @@
 <meta charset="UTF-8">
 <title>Lower Third Overlay</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=DM+Sans:wght@300;400;600;700&family=Plus+Jakarta+Sans:wght@300;400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,600;9..40,700&family=Plus+Jakarta+Sans:wght@300;400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
+  body { width:1920px; height:1080px; background:transparent; overflow:hidden; }
 
-  body {
-    width: 1920px;
-    height: 1080px;
-    background: transparent;
-    overflow: hidden;
-  }
-
-  #lt-wrapper {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-  }
+  #lt-wrapper { position:absolute; inset:0; pointer-events:none; }
 
   #lt-image {
-    position: absolute;
-    bottom: 0; left: 0;
-    width: 100%; height: auto;
+    position:absolute; bottom:0; left:0;
+    width:100%; height:100%; object-fit:cover;
   }
 
   #lt-text {
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
+    position:absolute;
+    display:flex; flex-direction:column;
+    opacity:0;
+    pointer-events:none;
   }
 
   #lt-nama, #lt-jabatan {
-    white-space: nowrap;
-    text-shadow: 0 1px 6px rgba(0,0,0,0.5);
-    line-height: 1.2;
-    display: block;
+    white-space:nowrap;
+    text-shadow:0 1px 6px rgba(0,0,0,0.5);
+    line-height:1.2; display:block;
   }
 
-  /* Animasi muncul */
-  @keyframes textIn {
-    from { opacity:0; transform:translateY(10px); }
-    to   { opacity:1; transform:translateY(0); }
-  }
+  /* ── FADE ── */
+  @keyframes fadeIn  { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fadeOut { from{opacity:1;transform:translateY(0)} to{opacity:0;transform:translateY(-6px)} }
 
-  /* Animasi hilang */
-  @keyframes textOut {
-    from { opacity:1; transform:translateY(0); }
-    to   { opacity:0; transform:translateY(-6px); }
-  }
+  /* ── SLIDE UP ── */
+  @keyframes slideUpIn  { from{opacity:0;transform:translateY(40px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes slideUpOut { from{opacity:1;transform:translateY(0)} to{opacity:0;transform:translateY(-30px)} }
 
-  #lt-text.animating-in  { animation: textIn  0.4s ease forwards; }
-  #lt-text.animating-out { animation: textOut 0.3s ease forwards; }
-  #lt-text.hidden { opacity:0; pointer-events:none; }
+  /* ── SLIDE LEFT ── */
+  @keyframes slideLeftIn  { from{opacity:0;transform:translateX(-60px)} to{opacity:1;transform:translateX(0)} }
+  @keyframes slideLeftOut { from{opacity:1;transform:translateX(0)} to{opacity:0;transform:translateX(60px)} }
+
+  /* ── ZOOM ── */
+  @keyframes zoomIn  { from{opacity:0;transform:scale(0.85)} to{opacity:1;transform:scale(1)} }
+  @keyframes zoomOut { from{opacity:1;transform:scale(1)} to{opacity:0;transform:scale(1.1)} }
 </style>
 </head>
 <body>
 <div id="lt-wrapper">
-  <img id="lt-image" src="/lowerthird.png">
-  <div id="lt-text" class="hidden">
+  <img id="lt-image" src="/lowerthird.png" alt="">
+  <div id="lt-text">
     <div id="lt-nama"></div>
     <div id="lt-jabatan"></div>
   </div>
@@ -72,7 +60,18 @@
   const ltNama    = document.getElementById('lt-nama');
   const ltJabatan = document.getElementById('lt-jabatan');
 
-  let lastKey = null;
+  let lastKey    = null;
+  let autoTimer  = null;
+  let isShowing  = false;
+
+  const ANIMS = {
+    fade:       { in: 'fadeIn',      out: 'fadeOut'     },
+    'slide-up': { in: 'slideUpIn',   out: 'slideUpOut'  },
+    'slide-left':{ in: 'slideLeftIn', out: 'slideLeftOut'},
+    zoom:       { in: 'zoomIn',      out: 'zoomOut'     },
+  };
+  const DUR_IN  = 400;
+  const DUR_OUT = 320;
 
   async function poll() {
     try {
@@ -87,49 +86,81 @@
     } catch(e) {}
   }
 
-  function applyState(s) {
+  function getAnimName(type, dir) {
+    const a = ANIMS[type] || ANIMS.fade;
+    return a[dir];
+  }
+
+  function applyStyle(s) {
     ltText.style.left        = (s.posX ?? 285) + 'px';
     ltText.style.bottom      = (s.posY ?? 308) + 'px';
     ltText.style.gap         = (s.gap  ?? 4)   + 'px';
-
     const font = s.fontFamily || 'Outfit';
-    ltNama.style.fontSize    = (s.namaSize    ?? 38)  + 'px';
+    ltNama.style.fontSize    = (s.namaSize    ?? 38) + 'px';
     ltNama.style.fontWeight  =  s.namaWeight  || '700';
     ltNama.style.color       =  s.namaColor   || '#ffffff';
     ltNama.style.fontFamily  = `'${font}', sans-serif`;
-
-    ltJabatan.style.fontSize    = (s.jabatanSize   ?? 26)  + 'px';
+    ltJabatan.style.fontSize    = (s.jabatanSize   ?? 26) + 'px';
     ltJabatan.style.fontWeight  =  s.jabatanWeight || '300';
     ltJabatan.style.color       =  s.jabatanColor  || '#e0f0ff';
     ltJabatan.style.fontFamily  = `'${font}', sans-serif`;
+  }
 
+  function animateIn(type) {
+    const name = getAnimName(type, 'in');
+    ltText.style.animation = `${name} ${DUR_IN}ms ease forwards`;
+    isShowing = true;
+  }
+
+  function animateOut(type, cb) {
+    const name = getAnimName(type, 'out');
+    ltText.style.animation = `${name} ${DUR_OUT}ms ease forwards`;
+    isShowing = false;
+    setTimeout(cb, DUR_OUT);
+  }
+
+  function applyState(s) {
+    applyStyle(s);
+    const anim     = s.animationType || 'fade';
+    const autoHide = s.autoHide || 0;
     const textChanged = ltNama.textContent !== (s.nama||'') || ltJabatan.textContent !== (s.jabatan||'');
 
+    // Clear auto-hide timer
+    if (autoTimer) { clearTimeout(autoTimer); autoTimer = null; }
+
     if (!s.visible) {
-      if (!ltText.classList.contains('hidden')) {
-        ltText.classList.remove('animating-in');
-        ltText.classList.add('animating-out');
-        setTimeout(() => { ltText.classList.add('hidden'); ltText.classList.remove('animating-out'); }, 320);
+      if (isShowing) {
+        animateOut(anim, () => { ltText.style.opacity = '0'; });
       }
       return;
     }
 
-    if (ltText.classList.contains('hidden') || textChanged) {
-      if (textChanged && !ltText.classList.contains('hidden')) {
-        ltText.classList.remove('animating-in');
-        ltText.classList.add('animating-out');
-        setTimeout(() => {
-          ltNama.textContent    = s.nama    || '';
-          ltJabatan.textContent = s.jabatan || '';
-          ltText.classList.remove('animating-out','hidden');
-          ltText.classList.add('animating-in');
-        }, 320);
-      } else {
+    if (!isShowing) {
+      // Tampilkan langsung
+      ltNama.textContent    = s.nama    || '';
+      ltJabatan.textContent = s.jabatan || '';
+      animateIn(anim);
+    } else if (textChanged) {
+      // Ganti teks: out → update → in
+      animateOut(anim, () => {
         ltNama.textContent    = s.nama    || '';
         ltJabatan.textContent = s.jabatan || '';
-        ltText.classList.remove('hidden','animating-out');
-        ltText.classList.add('animating-in');
-      }
+        animateIn(anim);
+        // Re-set auto-hide setelah animasi in
+        if (autoHide > 0) {
+          autoTimer = setTimeout(() => {
+            animateOut(anim, () => { ltText.style.opacity = '0'; });
+          }, autoHide * 1000);
+        }
+      });
+      return;
+    }
+
+    // Auto-hide
+    if (autoHide > 0) {
+      autoTimer = setTimeout(() => {
+        animateOut(anim, () => { ltText.style.opacity = '0'; });
+      }, autoHide * 1000);
     }
   }
 
