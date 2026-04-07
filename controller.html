@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Lower Third Controller – Al-Wildan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,600;9..40,700&family=Plus+Jakarta+Sans:wght@300;400;600;700&family=Lato:wght@300;400;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -22,6 +22,9 @@
 html { height:100%; overflow:hidden; }
 body { height:100%; overflow:hidden; background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif; font-size:14px; line-height:1.4; padding-top:52px; box-sizing:border-box; }
 button,select,input,textarea { font-family:inherit; }
+
+/* Mencegah iOS Safari auto-zoom saat fokus ke input (butuh font-size >= 16px) */
+input, select, textarea { font-size:16px !important; }
 
 /* ══════════════════════════════════════════ TOPBAR */
 .topbar {
