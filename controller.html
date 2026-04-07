@@ -204,7 +204,25 @@
   }
   .ctrl-input:focus { border-color:var(--accent); }
 
-  .range-wrap { flex:1; display:flex; align-items:center; gap:8px; }
+  .select-input {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    color: var(--text);
+    font-size: 12px;
+    font-family: 'Outfit', sans-serif;
+    padding: 6px 10px;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.15s;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%235c7a99' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 28px;
+  }
+  .select-input:focus { border-color: var(--accent); }
   input[type=range] {
     flex:1; -webkit-appearance:none; height:3px;
     border-radius:3px; background:var(--border); outline:none; cursor:pointer;
@@ -343,7 +361,45 @@
       </div>
 
       <div class="ctrl-block">
-        <div class="ctrl-block-title">Warna Teks — berlaku global untuk semua nama</div>
+        <div class="ctrl-block-title">Font & Spasi — berlaku global untuk semua nama</div>
+        <div class="ctrl-row">
+          <span class="ctrl-lbl">Font</span>
+          <select class="select-input" id="sl-font" onchange="updatePreview()">
+            <option value="Outfit">Outfit</option>
+            <option value="DM Sans">DM Sans</option>
+            <option value="Plus Jakarta Sans">Plus Jakarta Sans</option>
+            <option value="Lato">Lato</option>
+          </select>
+        </div>
+        <div class="ctrl-row">
+          <span class="ctrl-lbl">Weight Nama</span>
+          <select class="select-input" id="sl-namaWeight" onchange="updatePreview()">
+            <option value="300">Light 300</option>
+            <option value="400">Regular 400</option>
+            <option value="600">SemiBold 600</option>
+            <option value="700" selected>Bold 700</option>
+            <option value="800">ExtraBold 800</option>
+          </select>
+        </div>
+        <div class="ctrl-row">
+          <span class="ctrl-lbl">Weight Jabatan</span>
+          <select class="select-input" id="sl-jabatanWeight" onchange="updatePreview()">
+            <option value="300" selected>Light 300</option>
+            <option value="400">Regular 400</option>
+            <option value="600">SemiBold 600</option>
+            <option value="700">Bold 700</option>
+          </select>
+        </div>
+        <div class="ctrl-row">
+          <span class="ctrl-lbl">Gap</span>
+          <div class="range-wrap">
+            <input type="range" id="sl-gap" min="0" max="40" value="4" oninput="updatePreview()">
+            <span class="rv" id="rv-gap">4 px</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ctrl-block">
         <div class="ctrl-row">
           <span class="ctrl-lbl">Nama</span>
           <div class="color-wrap">
@@ -496,11 +552,21 @@ function updatePreview() {
   document.getElementById('rv-jabatanSize').textContent = js + ' px';
   document.getElementById('rv-posX').textContent = px;
   document.getElementById('rv-posY').textContent = py;
+  document.getElementById('rv-gap').textContent  = document.getElementById('sl-gap').value + ' px';
+
+  const font    = document.getElementById('sl-font').value;
+  const namaW   = document.getElementById('sl-namaWeight').value;
+  const jabatanW= document.getElementById('sl-jabatanWeight').value;
 
   const pn = document.getElementById('pv-nama');
   const pj = document.getElementById('pv-jabatan');
   pn.textContent = nama; pn.style.fontSize = ns+'px'; pn.style.color = nc;
+  pn.style.fontFamily = `'${font}', sans-serif`; pn.style.fontWeight = namaW;
   pj.textContent = jabatan; pj.style.fontSize = js+'px'; pj.style.color = jc;
+  pj.style.fontFamily = `'${font}', sans-serif`; pj.style.fontWeight = jabatanW;
+
+  const gap = +document.getElementById('sl-gap').value;
+  document.getElementById('pv-text').style.gap = gap + 'px';
 
   const sc = 1280/1920;
   const pt = document.getElementById('pv-text');
@@ -527,12 +593,16 @@ function setColor(f,c) {
 // ── BUILD DATA ──
 function buildStyle() {
   return {
-    posX:         +document.getElementById('sl-posX').value,
-    posY:         +document.getElementById('sl-posY').value,
-    namaSize:     +document.getElementById('sl-namaSize').value,
-    jabatanSize:  +document.getElementById('sl-jabatanSize').value,
-    namaColor:    document.getElementById('cp-nama').value,
-    jabatanColor: document.getElementById('cp-jabatan').value,
+    posX:           +document.getElementById('sl-posX').value,
+    posY:           +document.getElementById('sl-posY').value,
+    namaSize:       +document.getElementById('sl-namaSize').value,
+    jabatanSize:    +document.getElementById('sl-jabatanSize').value,
+    namaColor:      document.getElementById('cp-nama').value,
+    jabatanColor:   document.getElementById('cp-jabatan').value,
+    fontFamily:     document.getElementById('sl-font').value,
+    namaWeight:     document.getElementById('sl-namaWeight').value,
+    jabatanWeight:  document.getElementById('sl-jabatanWeight').value,
+    gap:            +document.getElementById('sl-gap').value,
   };
 }
 function buildState(vis) {
@@ -632,10 +702,14 @@ function clearInputs() {
 
 // ── APPLY STYLE FROM SERVER ──
 function applyStyleToUI(sty) {
-  document.getElementById('sl-posX').value        = sty.posX        ?? 285;
-  document.getElementById('sl-posY').value        = sty.posY        ?? 308;
-  document.getElementById('sl-namaSize').value    = sty.namaSize    ?? 38;
-  document.getElementById('sl-jabatanSize').value = sty.jabatanSize ?? 26;
+  document.getElementById('sl-posX').value           = sty.posX          ?? 285;
+  document.getElementById('sl-posY').value           = sty.posY          ?? 308;
+  document.getElementById('sl-namaSize').value       = sty.namaSize      ?? 38;
+  document.getElementById('sl-jabatanSize').value    = sty.jabatanSize   ?? 26;
+  document.getElementById('sl-gap').value            = sty.gap           ?? 4;
+  document.getElementById('sl-namaWeight').value     = sty.namaWeight    || '700';
+  document.getElementById('sl-jabatanWeight').value  = sty.jabatanWeight || '300';
+  if (sty.fontFamily) document.getElementById('sl-font').value = sty.fontFamily;
   setColor('nama',    sty.namaColor    || '#ffffff');
   setColor('jabatan', sty.jabatanColor || '#e0f0ff');
 }
