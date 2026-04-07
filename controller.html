@@ -7,667 +7,311 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,600;9..40,700&family=Plus+Jakarta+Sans:wght@300;400;600;700&family=Lato:wght@300;400;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* ══════════════════════════════════════════
-   RESET & VARS
-══════════════════════════════════════════ */
+/* ══════════════════════════════════════════ RESET & VARS */
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-
 :root {
-  --bg:       #080c14;
-  --surf:     #0d1422;
-  --card:     #111827;
-  --border:   #1c2b42;
-  --bhi:      #273f60;
-  --accent:   #2060f0;
-  --alo:      rgba(32,96,240,.13);
-  --ahi:      #5c9bff;
-  --muted:    #344d6b;
-  --dim:      #607898;
-  --text:     #ddeaf8;
-  --tdim:     #7899bb;
-  --green:    #0fd97a;
-  --glo:      rgba(15,217,122,.12);
-  --red:      #f04b4b;
-  --rlo:      rgba(240,75,75,.10);
-  --r:        10px;
-  --rsm:      6px;
-  --sidebar:  280px;
+  --bg:    #080c14; --surf:  #0d1422; --card:  #111827;
+  --bd:    #1c2b42; --bhi:   #273f60;
+  --ac:    #2060f0; --alo:   rgba(32,96,240,.13); --ahi: #5c9bff;
+  --mu:    #344d6b; --dim:   #607898; --text:  #ddeaf8; --tdim: #7899bb;
+  --gr:    #0fd97a; --glo:   rgba(15,217,122,.12);
+  --rd:    #f04b4b; --rlo:   rgba(240,75,75,.10);
+  --am:    #f5a623; --amo:   rgba(245,166,35,.13);
+  --r:10px; --rs:6px; --sw:280px;
 }
+html { height:100%; overflow:hidden; }
+body { height:100%; overflow:hidden; background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif; font-size:14px; line-height:1.4; padding-top:52px; box-sizing:border-box; }
+button,select,input,textarea { font-family:inherit; }
 
-html {
-  height: 100%;
-  overflow: hidden;
-}
-
-body {
-  height: 100%;
-  overflow: hidden;
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Outfit', sans-serif;
-  font-size: 14px;
-  line-height: 1.4;
-  padding-top: 52px;
-  box-sizing: border-box;
-}
-
-button, select, input { font-family: inherit; }
-
-/* ══════════════════════════════════════════
-   TOPBAR
-══════════════════════════════════════════ */
+/* ══════════════════════════════════════════ TOPBAR */
 .topbar {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  height: 52px;
-  background: var(--surf);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 16px;
-  z-index: 100;
-  gap: 12px;
+  position:fixed; top:0; left:0; right:0; height:52px;
+  background:var(--surf); border-bottom:1px solid var(--bd);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 14px; z-index:100; gap:10px;
 }
+.brand { display:flex; align-items:center; gap:9px; min-width:0; }
+.brand-icon { width:28px; height:28px; background:var(--ac); border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; }
+.brand-name { font-size:13px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.brand-sub  { font-size:9px; color:var(--dim); font-family:'DM Mono',monospace; white-space:nowrap; }
+.topbar-right { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+.sync-lbl { font-size:10px; font-family:'DM Mono',monospace; color:var(--dim); display:none; }
+@media(min-width:600px){.sync-lbl{display:block}}
+.live-badge { display:flex; align-items:center; gap:5px; padding:4px 9px; border-radius:20px; font-size:10px; font-family:'DM Mono',monospace; font-weight:600; letter-spacing:.8px; text-transform:uppercase; background:var(--rlo); color:var(--rd); border:1px solid rgba(240,75,75,.2); transition:all .3s; white-space:nowrap; }
+.live-badge.on { background:var(--glo); color:var(--gr); border-color:rgba(15,217,122,.25); }
+.live-dot { width:6px; height:6px; border-radius:50%; background:currentColor; }
+.live-badge.on .live-dot { animation:blink 1.4s infinite; }
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+.ham-btn { display:flex; flex-direction:column; gap:4px; padding:6px; background:transparent; border:none; cursor:pointer; flex-shrink:0; }
+.ham-btn span { display:block; width:20px; height:2px; background:var(--tdim); border-radius:2px; }
+@media(min-width:900px){.ham-btn{display:none}}
 
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-}
-.brand-icon {
-  width: 30px; height: 30px;
-  background: var(--accent);
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 15px;
-  flex-shrink: 0;
-}
-.brand-info { min-width: 0; }
-.brand-name {
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.1px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.brand-sub {
-  font-size: 10px;
-  color: var(--dim);
-  font-family: 'DM Mono', monospace;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+/* ══════════════════════════════════════════ LAYOUT */
+.layout { display:flex; height:100%; overflow:hidden; }
 
-.topbar-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-shrink: 0;
-}
+/* ══════════════════════════════════════════ SIDEBAR */
+.sidebar { width:var(--sw); background:var(--surf); border-right:1px solid var(--bd); display:flex; flex-direction:column; flex-shrink:0; position:fixed; top:52px; bottom:0; left:0; z-index:90; transform:translateX(-100%); transition:transform .25s ease; }
+.sidebar.open { transform:translateX(0); }
+@media(min-width:900px){ .sidebar { position:relative; top:auto; bottom:auto; transform:none; } }
+.sidebar-overlay { display:none; position:fixed; inset:52px 0 0; background:rgba(0,0,0,.55); z-index:89; }
+.sidebar-overlay.show { display:block; }
+@media(min-width:900px){.sidebar-overlay{display:none!important}}
 
-.sync-lbl {
-  font-size: 10px;
-  font-family: 'DM Mono', monospace;
-  color: var(--dim);
-  display: none;
-}
-@media (min-width: 600px) { .sync-lbl { display: block; } }
+.sidebar-tabs { display:flex; border-bottom:1px solid var(--bd); flex-shrink:0; }
+.stab { flex:1; padding:9px 0; font-size:10px; font-weight:600; letter-spacing:.5px; text-transform:uppercase; text-align:center; cursor:pointer; color:var(--dim); border:none; background:transparent; border-bottom:2px solid transparent; transition:all .15s; }
+.stab.active { color:var(--ahi); border-bottom-color:var(--ac); background:var(--alo); }
 
-.live-badge {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 5px 10px;
-  border-radius: 20px;
-  font-size: 10px;
-  font-family: 'DM Mono', monospace;
-  font-weight: 600;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  background: var(--rlo);
-  color: var(--red);
-  border: 1px solid rgba(240,75,75,.2);
-  transition: all .3s;
-  white-space: nowrap;
-}
-.live-badge.on {
-  background: var(--glo);
-  color: var(--green);
-  border-color: rgba(15,217,122,.25);
-}
-.live-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: currentColor;
-}
-.live-badge.on .live-dot { animation: blink 1.4s infinite; }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+.sidebar-panel { display:none; flex:1; flex-direction:column; overflow:hidden; }
+.sidebar-panel.active { display:flex; }
 
-/* Hamburger (mobile only) */
-.ham-btn {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 6px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-.ham-btn span {
-  display: block;
-  width: 20px; height: 2px;
-  background: var(--tdim);
-  border-radius: 2px;
-  transition: all .2s;
-}
-@media (min-width: 900px) { .ham-btn { display: none; } }
+/* Nama panel */
+.sidebar-head { padding:10px 12px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--bd); flex-shrink:0; }
+.sec-lbl { font-size:9px; text-transform:uppercase; letter-spacing:1.5px; color:var(--mu); font-family:'DM Mono',monospace; }
 
-/* ══════════════════════════════════════════
-   LAYOUT
-══════════════════════════════════════════ */
-.layout {
-  display: flex;
-  height: 100%;
-  overflow: hidden;
-}
+/* Queue mode toggle */
+.queue-toggle { display:flex; align-items:center; gap:6px; padding:7px 12px; border-bottom:1px solid var(--bd); flex-shrink:0; }
+.queue-lbl { font-size:11px; color:var(--dim); flex:1; }
+.toggle-switch { position:relative; width:34px; height:18px; cursor:pointer; }
+.toggle-switch input { opacity:0; width:0; height:0; }
+.toggle-track { position:absolute; inset:0; background:var(--bd); border-radius:9px; transition:background .2s; }
+.toggle-switch input:checked + .toggle-track { background:var(--ac); }
+.toggle-thumb { position:absolute; top:2px; left:2px; width:14px; height:14px; background:#fff; border-radius:50%; transition:transform .2s; }
+.toggle-switch input:checked ~ .toggle-thumb { transform:translateX(16px); }
 
-/* ══════════════════════════════════════════
-   SIDEBAR
-══════════════════════════════════════════ */
-.sidebar {
-  width: var(--sidebar);
-  background: var(--surf);
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-  position: fixed;
-  top: 52px;
-  bottom: 0;
-  left: 0;
-  z-index: 90;
-  transform: translateX(-100%);
-  transition: transform .25s ease;
-}
-.sidebar.open { transform: translateX(0); }
-@media (min-width: 900px) {
-  .sidebar { position: relative; top: auto; bottom: auto; transform: none; }
-}
+.name-list { flex:1; overflow-y:auto; }
+.name-list::-webkit-scrollbar{width:3px} .name-list::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
+.name-item { padding:9px 12px; cursor:pointer; border-left:2px solid transparent; transition:all .12s; display:flex; align-items:flex-start; gap:8px; }
+.name-item:hover { background:rgba(255,255,255,.025); }
+.name-item.active { background:var(--alo); border-left-color:var(--ac); }
+.name-item.queue-next { background:var(--amo); border-left-color:var(--am); }
+.ni-num { font-size:10px; font-family:'DM Mono',monospace; color:var(--mu); min-width:16px; padding-top:2px; }
+.ni-body { flex:1; min-width:0; }
+.ni-n { font-size:12px; font-weight:600; color:var(--text); }
+.ni-j { font-size:10px; color:var(--dim); margin-top:1px; }
 
-.sidebar-overlay {
-  display: none;
-  position: fixed;
-  inset: 52px 0 0;
-  background: rgba(0,0,0,.55);
-  z-index: 89;
-}
-.sidebar-overlay.show { display: block; }
-@media (min-width: 900px) { .sidebar-overlay { display: none !important; } }
+.sidebar-foot { padding:8px 10px; border-top:1px solid var(--bd); display:flex; gap:6px; flex-shrink:0; }
+.btn-flat { flex:1; padding:7px 0; border-radius:var(--rs); border:1px solid var(--bd); background:transparent; color:var(--dim); font-size:10px; cursor:pointer; transition:all .15s; display:flex; align-items:center; justify-content:center; gap:3px; }
+.btn-flat:hover { border-color:var(--ac); color:var(--ahi); background:var(--alo); }
+.btn-flat.del:hover { border-color:var(--rd); color:var(--rd); background:var(--rlo); }
 
-.sidebar-head {
-  padding: 12px 14px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-}
-.sec-label {
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: var(--muted);
-  font-family: 'DM Mono', monospace;
-}
-.icon-btn {
-  width: 28px; height: 28px;
-  border-radius: var(--rsm);
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--dim);
-  cursor: pointer;
-  font-size: 16px;
-  display: flex; align-items: center; justify-content: center;
-  transition: all .15s;
-}
-.icon-btn:hover { background: var(--alo); border-color: var(--accent); color: var(--ahi); }
+/* Import/Export panel */
+.tools-panel { padding:12px; display:flex; flex-direction:column; gap:8px; flex:1; overflow-y:auto; }
+.tool-btn { width:100%; padding:10px 14px; border-radius:var(--rs); border:1px solid var(--bd); background:transparent; color:var(--tdim); font-size:12px; cursor:pointer; transition:all .15s; display:flex; align-items:center; gap:8px; text-align:left; }
+.tool-btn:hover { border-color:var(--ac); color:var(--ahi); background:var(--alo); }
+.tool-btn .ti { font-size:16px; }
+.tool-sep { font-size:9px; text-transform:uppercase; letter-spacing:1.2px; color:var(--mu); font-family:'DM Mono',monospace; padding:4px 0; }
 
-.name-list { flex: 1; overflow-y: auto; }
-.name-list::-webkit-scrollbar { width: 3px; }
-.name-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+/* History panel */
+.hist-list { flex:1; overflow-y:auto; padding:4px 0; }
+.hist-item { padding:8px 12px; border-bottom:1px solid rgba(255,255,255,.04); }
+.hist-n { font-size:11px; font-weight:600; color:var(--text); }
+.hist-j { font-size:10px; color:var(--dim); }
+.hist-t { font-size:9px; color:var(--mu); font-family:'DM Mono',monospace; margin-top:2px; }
+.hist-empty { padding:24px 12px; text-align:center; font-size:11px; color:var(--mu); }
+.hist-foot { padding:8px 10px; border-top:1px solid var(--bd); flex-shrink:0; }
 
-.name-item {
-  padding: 10px 14px;
-  cursor: pointer;
-  border-left: 2px solid transparent;
-  transition: all .12s;
-}
-.name-item:hover { background: rgba(255,255,255,.025); }
-.name-item.active { background: var(--alo); border-left-color: var(--accent); }
-.ni-n { font-size: 12px; font-weight: 600; color: var(--text); }
-.ni-j { font-size: 11px; color: var(--dim); margin-top: 2px; }
+/* ══════════════════════════════════════════ MAIN */
+.main { flex:1; display:flex; flex-direction:column; min-width:0; overflow:hidden; }
 
-.sidebar-foot {
-  padding: 10px 12px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  gap: 8px;
-  flex-shrink: 0;
-}
-.btn-flat {
-  flex: 1;
-  padding: 8px 0;
-  border-radius: var(--rsm);
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--dim);
-  font-size: 11px;
-  cursor: pointer;
-  transition: all .15s;
-  display: flex; align-items: center; justify-content: center; gap: 4px;
-}
-.btn-flat:hover { border-color: var(--accent); color: var(--ahi); background: var(--alo); }
-.btn-flat.del:hover { border-color: var(--red); color: var(--red); background: var(--rlo); }
+/* ══════════════════════════════════════════ PREVIEW */
+.preview-wrap { background:#03050b; flex-shrink:0; display:flex; align-items:center; justify-content:center; padding:10px 14px; border-bottom:1px solid var(--bd); position:relative; }
+.preview-grid { position:absolute; inset:0; background-image:linear-gradient(rgba(32,96,240,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(32,96,240,.03) 1px,transparent 1px); background-size:28px 28px; pointer-events:none; }
+#pv-shell { width:100%; max-width:680px; position:relative; }
+#pv-frame { width:100%; aspect-ratio:16/9; border-radius:6px; overflow:hidden; position:relative; box-shadow:0 0 0 1px var(--bd),0 16px 48px rgba(0,0,0,.7); background:#0a1020; }
+#pv-lt-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
+.pv-placeholder { position:absolute; inset:0; display:none; flex-direction:column; justify-content:flex-end; }
+.pv-bar { height:17%; background:linear-gradient(135deg,#0b2d5a 0%,#0f1e4a 60%,#061228 100%); }
+.pv-line { position:absolute; bottom:17%; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,#2060f0 20%,#5c9bff 50%,#2060f0 80%,transparent); opacity:.8; }
+.pv-badge { position:absolute; top:6px; left:8px; font-size:8px; font-family:'DM Mono',monospace; color:var(--mu); text-transform:uppercase; letter-spacing:1px; pointer-events:none; }
+.pv-hotkey-hint { position:absolute; top:6px; right:8px; font-size:8px; font-family:'DM Mono',monospace; color:var(--mu); pointer-events:none; display:none; }
+@media(min-width:600px){.pv-hotkey-hint{display:block}}
+#pv-text { position:absolute; display:flex; flex-direction:column; transition:opacity .3s,transform .3s; pointer-events:none; }
+#pv-text.hidden { opacity:0; transform:translateY(6px); }
+#pv-nama,#pv-jabatan { white-space:nowrap; line-height:1.2; }
 
-/* ══════════════════════════════════════════
-   MAIN
-══════════════════════════════════════════ */
-.main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  overflow: hidden;
-}
+/* Auto-hide progress bar */
+#pv-autohide-bar { position:absolute; bottom:0; left:0; height:2px; background:var(--am); width:0%; transition:none; display:none; }
 
-/* ══════════════════════════════════════════
-   PREVIEW — tidak ikut scroll
-══════════════════════════════════════════ */
-.preview-wrap {
-  background: #03050b;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border);
-  position: relative;
-}
+/* ══════════════════════════════════════════ CONTROLS */
+.controls { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding-bottom:68px; }
+.controls::-webkit-scrollbar{width:3px} .controls::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
 
-.preview-grid {
-  position: absolute; inset: 0;
-  background-image:
-    linear-gradient(rgba(32,96,240,.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(32,96,240,.03) 1px, transparent 1px);
-  background-size: 28px 28px;
-  pointer-events: none;
-}
+.ctrl-sec { border-bottom:1px solid var(--bd); }
+.ctrl-sec-head { display:flex; align-items:center; justify-content:space-between; padding:11px 14px 9px; cursor:pointer; user-select:none; }
+.ctrl-sec-head:hover { background:rgba(255,255,255,.015); }
+.ctrl-sec-title { font-size:9px; text-transform:uppercase; letter-spacing:1.5px; color:var(--mu); font-family:'DM Mono',monospace; }
+.ctrl-sec-arrow { font-size:10px; color:var(--mu); transition:transform .2s; }
+.ctrl-sec.collapsed .ctrl-sec-arrow { transform:rotate(-90deg); }
+.ctrl-sec-body { padding:4px 14px 12px; display:flex; flex-direction:column; gap:9px; }
+.ctrl-sec.collapsed .ctrl-sec-body { display:none; }
 
-#pv-shell {
-  width: 100%;
-  max-width: 720px;
-  position: relative;
-}
+.ctrl-row { display:flex; align-items:center; gap:10px; }
+.ctrl-lbl { font-size:11px; color:var(--dim); width:90px; flex-shrink:0; }
+.ctrl-input { flex:1; background:var(--bg); border:1px solid var(--bd); border-radius:var(--rs); color:var(--text); font-size:13px; padding:7px 10px; outline:none; transition:border-color .15s; min-width:0; }
+.ctrl-input:focus { border-color:var(--ac); }
+.ctrl-select { flex:1; background:var(--bg); border:1px solid var(--bd); border-radius:var(--rs); color:var(--text); font-size:13px; padding:7px 28px 7px 10px; outline:none; cursor:pointer; transition:border-color .15s; appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23607898' stroke-width='1.5' stroke-linecap='round' fill='none'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 10px center; min-width:0; }
+.ctrl-select:focus { border-color:var(--ac); }
 
-#pv-frame {
-  width: 100%;
-  aspect-ratio: 16/9;
-  border-radius: 6px;
-  overflow: hidden;
-  position: relative;
-  box-shadow: 0 0 0 1px var(--border), 0 20px 60px rgba(0,0,0,.7);
-  background: #0a1020;
-}
+.range-wrap { flex:1; display:flex; align-items:center; gap:8px; min-width:0; }
+input[type=range] { flex:1; -webkit-appearance:none; height:4px; border-radius:4px; background:var(--bd); outline:none; cursor:pointer; min-width:0; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:18px; height:18px; border-radius:50%; background:var(--ahi); box-shadow:0 0 0 3px rgba(92,155,255,.2); cursor:pointer; }
+input[type=range]:active::-webkit-slider-thumb { box-shadow:0 0 0 6px rgba(92,155,255,.25); }
+.rv { font-size:11px; font-family:'DM Mono',monospace; color:var(--dim); min-width:40px; text-align:right; }
 
-/* Gambar lower third PNG full frame */
-#pv-lt-img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
+.color-wrap { display:flex; align-items:center; gap:7px; flex:1; flex-wrap:wrap; min-width:0; }
+input[type=color] { -webkit-appearance:none; width:34px; height:34px; border:2px solid var(--bd); border-radius:var(--rs); cursor:pointer; background:none; padding:0; flex-shrink:0; }
+input[type=color]::-webkit-color-swatch-wrapper { padding:2px; border-radius:4px; }
+input[type=color]::-webkit-color-swatch { border:none; border-radius:3px; }
+.hex-inp { background:var(--bg); border:1px solid var(--bd); border-radius:var(--rs); color:var(--dim); font-size:11px; font-family:'DM Mono',monospace; padding:5px 8px; width:74px; outline:none; flex-shrink:0; }
+.hex-inp:focus { border-color:var(--ac); color:var(--text); }
+.presets { display:flex; gap:4px; flex-wrap:wrap; }
+.preset { width:20px; height:20px; border-radius:4px; cursor:pointer; border:1px solid transparent; transition:transform .12s,border-color .12s; flex-shrink:0; }
+.preset:hover { transform:scale(1.2); border-color:rgba(255,255,255,.4); }
 
-/* Fallback placeholder jika gambar belum ada */
-#pv-lt-img.fallback-shown { display: none; }
-.pv-placeholder {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-}
-.pv-bar {
-  height: 17%;
-  background: linear-gradient(135deg, #0b2d5a 0%, #0f1e4a 60%, #061228 100%);
-}
-.pv-line {
-  position: absolute;
-  bottom: 17%;
-  left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #2060f0 20%, #5c9bff 50%, #2060f0 80%, transparent);
-  opacity: .8;
-}
+/* Preset style cards */
+.preset-list { display:flex; flex-direction:column; gap:6px; }
+.preset-card { display:flex; align-items:center; gap:8px; padding:8px 10px; background:var(--bg); border:1px solid var(--bd); border-radius:var(--rs); cursor:pointer; transition:all .15s; }
+.preset-card:hover { border-color:var(--ac); background:var(--alo); }
+.preset-card-name { flex:1; font-size:12px; color:var(--text); }
+.preset-card-meta { font-size:10px; color:var(--dim); font-family:'DM Mono',monospace; }
+.preset-card-del { padding:3px 7px; border-radius:4px; border:1px solid transparent; background:transparent; color:var(--mu); font-size:11px; cursor:pointer; transition:all .15s; }
+.preset-card-del:hover { border-color:var(--rd); color:var(--rd); background:var(--rlo); }
+.preset-save-row { display:flex; gap:6px; }
+.preset-name-inp { flex:1; background:var(--bg); border:1px solid var(--bd); border-radius:var(--rs); color:var(--text); font-size:12px; padding:7px 10px; outline:none; }
+.preset-name-inp:focus { border-color:var(--ac); }
+.preset-save-btn { padding:7px 12px; border-radius:var(--rs); background:var(--ac); color:#fff; border:none; font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap; }
+.preset-save-btn:hover { background:#1a52d4; }
 
-.pv-badge {
-  position: absolute;
-  top: 8px; left: 10px;
-  font-size: 8px;
-  font-family: 'DM Mono', monospace;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  pointer-events: none;
-}
+/* ══════════════════════════════════════════ ACTION BAR */
+.action-bar { position:fixed; bottom:0; left:0; right:0; padding:8px 12px; padding-bottom:max(8px,env(safe-area-inset-bottom)); background:var(--surf); border-top:1px solid var(--bd); display:flex; gap:6px; z-index:80; align-items:center; }
+@media(min-width:900px){.action-bar{left:var(--sw)}}
+.btn { padding:9px 14px; border-radius:var(--r); font-size:12px; font-weight:600; cursor:pointer; border:none; transition:all .15s; display:flex; align-items:center; justify-content:center; gap:5px; white-space:nowrap; touch-action:manipulation; }
+.btn-send { background:var(--ac); color:#fff; flex:1; }
+.btn-send:hover { background:#1a52d4; }
+.btn-send:disabled { opacity:.5; cursor:not-allowed; }
+.btn-toggle { background:var(--glo); color:var(--gr); border:1px solid rgba(15,217,122,.25); min-width:40px; }
+.btn-toggle:hover { background:rgba(15,217,122,.2); }
+.btn-toggle.off { background:var(--rlo); color:var(--rd); border-color:rgba(240,75,75,.25); }
+.btn-toggle.off:hover { background:rgba(240,75,75,.18); }
+.btn-next { background:var(--amo); color:var(--am); border:1px solid rgba(245,166,35,.25); display:none; }
+.btn-next:hover { background:rgba(245,166,35,.2); }
+.btn-next.show { display:flex; }
+.btn-undo { background:transparent; color:var(--dim); border:1px solid var(--bd); }
+.btn-undo:hover { border-color:var(--ahi); color:var(--ahi); background:var(--alo); }
+.btn-undo:disabled { opacity:.3; cursor:not-allowed; }
+.btn-save { background:transparent; color:var(--dim); border:1px solid var(--bd); display:none; }
+@media(min-width:560px){.btn-save{display:flex}}
+.btn-save:hover { border-color:var(--ac); color:var(--ahi); background:var(--alo); }
 
-/* Teks overlay di preview */
-#pv-text {
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  transition: opacity .3s, transform .3s;
-  pointer-events: none;
-}
-#pv-text.hidden { opacity: 0; transform: translateY(6px); }
-#pv-nama    { white-space: nowrap; line-height: 1.2; }
-#pv-jabatan { white-space: nowrap; line-height: 1.2; }
+/* Hotkey badge */
+.hk { display:inline-flex; align-items:center; justify-content:center; width:16px; height:16px; border-radius:3px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); font-size:9px; font-family:'DM Mono',monospace; color:var(--dim); flex-shrink:0; }
 
-/* ══════════════════════════════════════════
-   CONTROLS
-══════════════════════════════════════════ */
-.controls {
-  flex: 1;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: 80px;
-}
-.controls::-webkit-scrollbar { width: 3px; }
-.controls::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+/* ══════════════════════════════════════════ TOAST */
+#toast { position:fixed; bottom:60px; right:12px; padding:8px 13px; border-radius:var(--r); font-size:11px; font-family:'DM Mono',monospace; pointer-events:none; opacity:0; transform:translateY(6px); transition:all .2s; z-index:200; border:1px solid; max-width:calc(100vw - 24px); }
+#toast.show { opacity:1; transform:translateY(0); }
+#toast.ok  { background:var(--glo); color:var(--gr);  border-color:rgba(15,217,122,.3); }
+#toast.err { background:var(--rlo); color:var(--rd);  border-color:rgba(240,75,75,.3); }
+#toast.inf { background:var(--amo); color:var(--am);  border-color:rgba(245,166,35,.3); }
 
-.ctrl-section {
-  border-bottom: 1px solid var(--border);
-}
-
-.ctrl-section-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px 10px;
-  cursor: pointer;
-  user-select: none;
-}
-.ctrl-section-head:hover { background: rgba(255,255,255,.015); }
-
-.ctrl-section-title {
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: var(--muted);
-  font-family: 'DM Mono', monospace;
-}
-.ctrl-section-arrow {
-  font-size: 10px;
-  color: var(--muted);
-  transition: transform .2s;
-}
-.ctrl-section.collapsed .ctrl-section-arrow { transform: rotate(-90deg); }
-.ctrl-section-body {
-  padding: 4px 16px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.ctrl-section.collapsed .ctrl-section-body { display: none; }
-
-.ctrl-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.ctrl-lbl {
-  font-size: 11px;
-  color: var(--dim);
-  width: 96px;
-  flex-shrink: 0;
-}
-
-.ctrl-input {
-  flex: 1;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--rsm);
-  color: var(--text);
-  font-size: 13px;
-  padding: 8px 11px;
-  outline: none;
-  transition: border-color .15s;
-  min-width: 0;
-}
-.ctrl-input:focus { border-color: var(--accent); }
-
-/* Select */
-.ctrl-select {
-  flex: 1;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--rsm);
-  color: var(--text);
-  font-size: 13px;
-  padding: 8px 32px 8px 11px;
-  outline: none;
-  cursor: pointer;
-  transition: border-color .15s;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23607898' stroke-width='1.5' stroke-linecap='round' fill='none'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 11px center;
-  min-width: 0;
-}
-.ctrl-select:focus { border-color: var(--accent); }
-
-/* Slider */
-.range-wrap { flex: 1; display: flex; align-items: center; gap: 10px; min-width: 0; }
-input[type=range] {
-  flex: 1;
-  -webkit-appearance: none;
-  height: 4px;
-  border-radius: 4px;
-  background: var(--border);
-  outline: none;
-  cursor: pointer;
-  min-width: 0;
-}
-input[type=range]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 18px; height: 18px;
-  border-radius: 50%;
-  background: var(--ahi);
-  box-shadow: 0 0 0 3px rgba(92,155,255,.2);
-  cursor: pointer;
-  transition: box-shadow .15s;
-}
-input[type=range]:active::-webkit-slider-thumb { box-shadow: 0 0 0 6px rgba(92,155,255,.25); }
-.rv {
-  font-size: 11px;
-  font-family: 'DM Mono', monospace;
-  color: var(--dim);
-  min-width: 42px;
-  text-align: right;
-}
-
-/* Color */
-.color-wrap { display: flex; align-items: center; gap: 8px; flex: 1; flex-wrap: wrap; min-width: 0; }
-input[type=color] {
-  -webkit-appearance: none;
-  width: 36px; height: 36px;
-  border: 2px solid var(--border);
-  border-radius: var(--rsm);
-  cursor: pointer;
-  background: none; padding: 0;
-  flex-shrink: 0;
-}
-input[type=color]::-webkit-color-swatch-wrapper { padding: 3px; border-radius: 5px; }
-input[type=color]::-webkit-color-swatch { border: none; border-radius: 3px; }
-
-.hex-inp {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--rsm);
-  color: var(--dim);
-  font-size: 11px;
-  font-family: 'DM Mono', monospace;
-  padding: 6px 9px;
-  width: 78px;
-  outline: none;
-  flex-shrink: 0;
-}
-.hex-inp:focus { border-color: var(--accent); color: var(--text); }
-
-.presets { display: flex; gap: 5px; flex-wrap: wrap; }
-.preset {
-  width: 22px; height: 22px;
-  border-radius: 5px;
-  cursor: pointer;
-  border: 1px solid transparent;
-  transition: transform .12s, border-color .12s;
-  flex-shrink: 0;
-}
-.preset:hover { transform: scale(1.2); border-color: rgba(255,255,255,.4); }
-
-/* ══════════════════════════════════════════
-   ACTION BAR (sticky bottom)
-══════════════════════════════════════════ */
-.action-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0; right: 0;
-  padding: 10px 14px;
-  padding-bottom: max(10px, env(safe-area-inset-bottom));
-  background: var(--surf);
-  border-top: 1px solid var(--border);
-  display: flex;
-  gap: 8px;
-  z-index: 80;
-}
-@media (min-width: 900px) {
-  .action-bar { left: var(--sidebar); }
-}
-
-.btn {
-  padding: 10px 16px;
-  border-radius: var(--r);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
-  transition: all .15s;
-  display: flex; align-items: center; justify-content: center; gap: 6px;
-  white-space: nowrap;
-  touch-action: manipulation;
-}
-.btn-send { background: var(--accent); color: #fff; flex: 1; }
-.btn-send:hover { background: #1a52d4; }
-.btn-send:disabled { opacity: .5; cursor: not-allowed; }
-
-.btn-toggle {
-  background: var(--glo); color: var(--green);
-  border: 1px solid rgba(15,217,122,.25);
-  min-width: 44px;
-}
-.btn-toggle:hover { background: rgba(15,217,122,.2); }
-.btn-toggle.off { background: var(--rlo); color: var(--red); border-color: rgba(240,75,75,.25); }
-.btn-toggle.off:hover { background: rgba(240,75,75,.18); }
-
-.btn-save {
-  background: transparent; color: var(--dim);
-  border: 1px solid var(--border);
-  display: none;
-}
-@media (min-width: 560px) { .btn-save { display: flex; } }
-.btn-save:hover { border-color: var(--accent); color: var(--ahi); background: var(--alo); }
-
-.btn-clear {
-  background: transparent; color: var(--dim);
-  border: 1px solid var(--border);
-  display: none;
-}
-@media (min-width: 720px) { .btn-clear { display: flex; } }
-.btn-clear:hover { border-color: var(--red); color: var(--red); background: var(--rlo); }
-
-/* ══════════════════════════════════════════
-   TOAST
-══════════════════════════════════════════ */
-#toast {
-  position: fixed;
-  bottom: 72px;
-  right: 14px;
-  padding: 9px 14px;
-  border-radius: var(--r);
-  font-size: 11px;
-  font-family: 'DM Mono', monospace;
-  pointer-events: none;
-  opacity: 0;
-  transform: translateY(6px);
-  transition: all .2s;
-  z-index: 200;
-  border: 1px solid;
-  max-width: calc(100vw - 28px);
-}
-#toast.show { opacity: 1; transform: translateY(0); }
-#toast.ok  { background: var(--glo); color: var(--green); border-color: rgba(15,217,122,.3); }
-#toast.err { background: var(--rlo); color: var(--red);   border-color: rgba(240,75,75,.3); }
+/* Hidden file input */
+#csv-input { display:none; }
 </style>
 </head>
 <body>
 
 <!-- Topbar -->
 <div class="topbar">
-  <button class="ham-btn" id="hamBtn" onclick="toggleSidebar()" aria-label="Menu">
-    <span></span><span></span><span></span>
-  </button>
+  <button class="ham-btn" onclick="toggleSidebar()"><span></span><span></span><span></span></button>
   <div class="brand">
     <div class="brand-icon">🎬</div>
-    <div class="brand-info">
+    <div>
       <div class="brand-name">Lower Third Controller</div>
       <div class="brand-sub">Al-Wildan Islamic School</div>
     </div>
   </div>
   <div class="topbar-right">
     <span class="sync-lbl" id="syncLbl">—</span>
-    <div class="live-badge" id="liveBadge">
-      <div class="live-dot"></div>
-      <span id="liveText">OFF</span>
-    </div>
+    <div class="live-badge" id="liveBadge"><div class="live-dot"></div><span id="liveText">OFF</span></div>
   </div>
 </div>
 
-<!-- Sidebar overlay -->
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+<input type="file" id="csv-input" accept=".csv,.txt" onchange="importCSV(event)">
 
-<!-- Layout -->
 <div class="layout">
 
-  <!-- Sidebar -->
+  <!-- ══ SIDEBAR ══ -->
   <div class="sidebar" id="sidebar">
-    <div class="sidebar-head">
-      <span class="sec-label">Daftar Nama</span>
-      <button class="icon-btn" onclick="addNew()" title="Tambah baru">+</button>
+    <!-- Tabs -->
+    <div class="sidebar-tabs">
+      <button class="stab active" onclick="switchTab('names')">Nama</button>
+      <button class="stab" onclick="switchTab('tools')">Tools</button>
+      <button class="stab" onclick="switchTab('history')">Log</button>
     </div>
-    <div class="name-list" id="nameList"></div>
-    <div class="sidebar-foot">
-      <button class="btn-flat" onclick="saveToList()">💾 Simpan</button>
-      <button class="btn-flat del" onclick="deleteSelected()">✕ Hapus</button>
+
+    <!-- Panel: Nama -->
+    <div class="sidebar-panel active" id="tab-names">
+      <div class="sidebar-head">
+        <span class="sec-lbl">Daftar Nama</span>
+        <button class="btn-flat" style="flex:0;padding:4px 10px;font-size:10px" onclick="addNew()">+ Tambah</button>
+      </div>
+      <!-- Queue mode -->
+      <div class="queue-toggle">
+        <span class="queue-lbl">🔢 Mode Antrian</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="queueMode" onchange="toggleQueueMode()">
+          <div class="toggle-track"></div>
+          <div class="toggle-thumb"></div>
+        </label>
+      </div>
+      <div class="name-list" id="nameList"></div>
+      <div class="sidebar-foot">
+        <button class="btn-flat" onclick="saveToList()">💾 Simpan</button>
+        <button class="btn-flat del" onclick="deleteSelected()">✕ Hapus</button>
+      </div>
+    </div>
+
+    <!-- Panel: Tools -->
+    <div class="sidebar-panel" id="tab-tools">
+      <div class="tools-panel">
+        <div class="tool-sep">Import / Export</div>
+        <button class="tool-btn" onclick="document.getElementById('csv-input').click()">
+          <span class="ti">📂</span>
+          <div><div style="font-weight:600;color:var(--text)">Import CSV</div><div style="font-size:10px;color:var(--dim)">nama,jabatan per baris</div></div>
+        </button>
+        <button class="tool-btn" onclick="exportCSV()">
+          <span class="ti">💾</span>
+          <div><div style="font-weight:600;color:var(--text)">Export CSV</div><div style="font-size:10px;color:var(--dim)">Backup daftar nama</div></div>
+        </button>
+        <div class="tool-sep" style="margin-top:4px">Lainnya</div>
+        <button class="tool-btn" onclick="clearHistory()">
+          <span class="ti">🗑</span>
+          <div><div style="font-weight:600;color:var(--text)">Hapus History Log</div><div style="font-size:10px;color:var(--dim)">Bersihkan semua rekaman</div></div>
+        </button>
+        <button class="tool-btn" onclick="resetStyle()">
+          <span class="ti">↺</span>
+          <div><div style="font-weight:600;color:var(--text)">Reset Style</div><div style="font-size:10px;color:var(--dim)">Kembalikan ke default</div></div>
+        </button>
+        <div class="tool-sep" style="margin-top:4px">Hotkeys</div>
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--dim)"><span><span class="hk">1</span>–<span class="hk">9</span> Pilih nama</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--dim)"><span><span class="hk">Space</span> Show/Hide</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--dim)"><span><span class="hk">Enter</span> Kirim ke OBS</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--dim)"><span><span class="hk">→</span> Next antrian</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--dim)"><span><span class="hk">Z</span> Undo</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel: History -->
+    <div class="sidebar-panel" id="tab-history">
+      <div class="sidebar-head"><span class="sec-lbl">History Log</span><span id="histCount" style="font-size:10px;color:var(--dim);font-family:'DM Mono',monospace">0</span></div>
+      <div class="hist-list" id="histList"><div class="hist-empty">Belum ada riwayat</div></div>
+      <div class="hist-foot"><button class="btn-flat del" style="width:100%" onclick="clearHistory()">🗑 Hapus Semua</button></div>
     </div>
   </div>
 
-  <!-- Main -->
+  <!-- ══ MAIN ══ -->
   <div class="main">
 
     <!-- Preview -->
@@ -675,23 +319,12 @@ input[type=color]::-webkit-color-swatch { border: none; border-radius: 3px; }
       <div class="preview-grid"></div>
       <div id="pv-shell">
         <div id="pv-frame">
-          <!-- Gambar lower third PNG -->
-          <img id="pv-lt-img" src="/lowerthird.png" alt=""
-            onerror="this.style.display='none'; document.getElementById('pv-placeholder').style.display='flex';">
-
-          <!-- Placeholder jika gambar belum ada -->
-          <div class="pv-placeholder" id="pv-placeholder" style="display:none;">
-            <div class="pv-bar"></div>
-            <div class="pv-line"></div>
-          </div>
-
+          <img id="pv-lt-img" src="/lowerthird.png" alt="" onerror="this.style.display='none';document.getElementById('pv-placeholder').style.display='flex'">
+          <div class="pv-placeholder" id="pv-placeholder"><div class="pv-bar"></div><div class="pv-line"></div></div>
           <div class="pv-badge">PREVIEW · 1920×1080</div>
-
-          <!-- Teks overlay -->
-          <div id="pv-text" class="hidden">
-            <div id="pv-nama"></div>
-            <div id="pv-jabatan"></div>
-          </div>
+          <div class="pv-hotkey-hint">Enter=Kirim · Space=Show/Hide · →=Next</div>
+          <div id="pv-text" class="hidden"><div id="pv-nama"></div><div id="pv-jabatan"></div></div>
+          <div id="pv-autohide-bar"></div>
         </div>
       </div>
     </div>
@@ -700,12 +333,9 @@ input[type=color]::-webkit-color-swatch { border: none; border-radius: 3px; }
     <div class="controls">
 
       <!-- Teks -->
-      <div class="ctrl-section" id="sec-text">
-        <div class="ctrl-section-head" onclick="toggleSection('sec-text')">
-          <span class="ctrl-section-title">✏️ Teks</span>
-          <span class="ctrl-section-arrow">▾</span>
-        </div>
-        <div class="ctrl-section-body">
+      <div class="ctrl-sec" id="sec-text">
+        <div class="ctrl-sec-head" onclick="toggleSec('sec-text')"><span class="ctrl-sec-title">✏️ Teks</span><span class="ctrl-sec-arrow">▾</span></div>
+        <div class="ctrl-sec-body">
           <div class="ctrl-row">
             <span class="ctrl-lbl">Nama</span>
             <input class="ctrl-input" id="inp-nama" type="text" placeholder="Nama lengkap…" oninput="updatePreview()">
@@ -718,14 +348,10 @@ input[type=color]::-webkit-color-swatch { border: none; border-radius: 3px; }
       </div>
 
       <!-- Font & Spasi -->
-      <div class="ctrl-section" id="sec-font">
-        <div class="ctrl-section-head" onclick="toggleSection('sec-font')">
-          <span class="ctrl-section-title">🔤 Font & Spasi — global</span>
-          <span class="ctrl-section-arrow">▾</span>
-        </div>
-        <div class="ctrl-section-body">
-          <div class="ctrl-row">
-            <span class="ctrl-lbl">Font</span>
+      <div class="ctrl-sec collapsed" id="sec-font">
+        <div class="ctrl-sec-head" onclick="toggleSec('sec-font')"><span class="ctrl-sec-title">🔤 Font & Spasi — global</span><span class="ctrl-sec-arrow">▾</span></div>
+        <div class="ctrl-sec-body">
+          <div class="ctrl-row"><span class="ctrl-lbl">Font</span>
             <select class="ctrl-select" id="sl-font" onchange="updatePreview()">
               <option value="Outfit">Outfit</option>
               <option value="DM Sans">DM Sans</option>
@@ -733,58 +359,35 @@ input[type=color]::-webkit-color-swatch { border: none; border-radius: 3px; }
               <option value="Lato">Lato</option>
             </select>
           </div>
-          <div class="ctrl-row">
-            <span class="ctrl-lbl">Size Nama</span>
-            <div class="range-wrap">
-              <input type="range" id="sl-namaSize" min="18" max="80" value="38" oninput="updatePreview()">
-              <span class="rv" id="rv-namaSize">38px</span>
-            </div>
+          <div class="ctrl-row"><span class="ctrl-lbl">Size Nama</span>
+            <div class="range-wrap"><input type="range" id="sl-namaSize" min="18" max="80" value="38" oninput="updatePreview()"><span class="rv" id="rv-namaSize">38px</span></div>
           </div>
-          <div class="ctrl-row">
-            <span class="ctrl-lbl">Weight Nama</span>
+          <div class="ctrl-row"><span class="ctrl-lbl">Weight Nama</span>
             <select class="ctrl-select" id="sl-namaWeight" onchange="updatePreview()">
-              <option value="300">Light 300</option>
-              <option value="400">Regular 400</option>
-              <option value="600">SemiBold 600</option>
-              <option value="700" selected>Bold 700</option>
-              <option value="800">ExtraBold 800</option>
+              <option value="300">Light 300</option><option value="400">Regular 400</option>
+              <option value="600">SemiBold 600</option><option value="700" selected>Bold 700</option><option value="800">ExtraBold 800</option>
             </select>
           </div>
-          <div class="ctrl-row">
-            <span class="ctrl-lbl">Size Jabatan</span>
-            <div class="range-wrap">
-              <input type="range" id="sl-jabatanSize" min="12" max="60" value="26" oninput="updatePreview()">
-              <span class="rv" id="rv-jabatanSize">26px</span>
-            </div>
+          <div class="ctrl-row"><span class="ctrl-lbl">Size Jabatan</span>
+            <div class="range-wrap"><input type="range" id="sl-jabatanSize" min="12" max="60" value="26" oninput="updatePreview()"><span class="rv" id="rv-jabatanSize">26px</span></div>
           </div>
-          <div class="ctrl-row">
-            <span class="ctrl-lbl">Weight Jabatan</span>
+          <div class="ctrl-row"><span class="ctrl-lbl">Weight Jabatan</span>
             <select class="ctrl-select" id="sl-jabatanWeight" onchange="updatePreview()">
-              <option value="300" selected>Light 300</option>
-              <option value="400">Regular 400</option>
-              <option value="600">SemiBold 600</option>
-              <option value="700">Bold 700</option>
+              <option value="300" selected>Light 300</option><option value="400">Regular 400</option>
+              <option value="600">SemiBold 600</option><option value="700">Bold 700</option>
             </select>
           </div>
-          <div class="ctrl-row">
-            <span class="ctrl-lbl">Gap</span>
-            <div class="range-wrap">
-              <input type="range" id="sl-gap" min="0" max="40" value="4" oninput="updatePreview()">
-              <span class="rv" id="rv-gap">4px</span>
-            </div>
+          <div class="ctrl-row"><span class="ctrl-lbl">Gap</span>
+            <div class="range-wrap"><input type="range" id="sl-gap" min="0" max="40" value="4" oninput="updatePreview()"><span class="rv" id="rv-gap">4px</span></div>
           </div>
         </div>
       </div>
 
       <!-- Warna -->
-      <div class="ctrl-section" id="sec-color">
-        <div class="ctrl-section-head" onclick="toggleSection('sec-color')">
-          <span class="ctrl-section-title">🎨 Warna — global</span>
-          <span class="ctrl-section-arrow">▾</span>
-        </div>
-        <div class="ctrl-section-body">
-          <div class="ctrl-row">
-            <span class="ctrl-lbl">Nama</span>
+      <div class="ctrl-sec collapsed" id="sec-color">
+        <div class="ctrl-sec-head" onclick="toggleSec('sec-color')"><span class="ctrl-sec-title">🎨 Warna — global</span><span class="ctrl-sec-arrow">▾</span></div>
+        <div class="ctrl-sec-body">
+          <div class="ctrl-row"><span class="ctrl-lbl">Nama</span>
             <div class="color-wrap">
               <input type="color" id="cp-nama" value="#ffffff" oninput="syncHex('nama')">
               <input type="text" class="hex-inp" id="ch-nama" value="#ffffff" maxlength="7" oninput="syncPicker('nama')">
@@ -798,8 +401,7 @@ input[type=color]::-webkit-color-swatch { border: none; border-radius: 3px; }
               </div>
             </div>
           </div>
-          <div class="ctrl-row">
-            <span class="ctrl-lbl">Jabatan</span>
+          <div class="ctrl-row"><span class="ctrl-lbl">Jabatan</span>
             <div class="color-wrap">
               <input type="color" id="cp-jabatan" value="#e0f0ff" oninput="syncHex('jabatan')">
               <input type="text" class="hex-inp" id="ch-jabatan" value="#e0f0ff" maxlength="7" oninput="syncPicker('jabatan')">
@@ -817,26 +419,48 @@ input[type=color]::-webkit-color-swatch { border: none; border-radius: 3px; }
       </div>
 
       <!-- Posisi -->
-      <div class="ctrl-section" id="sec-pos">
-        <div class="ctrl-section-head" onclick="toggleSection('sec-pos')">
-          <span class="ctrl-section-title">📐 Posisi (px pada 1920×1080) — global</span>
-          <span class="ctrl-section-arrow">▾</span>
+      <div class="ctrl-sec collapsed" id="sec-pos">
+        <div class="ctrl-sec-head" onclick="toggleSec('sec-pos')"><span class="ctrl-sec-title">📐 Posisi — global</span><span class="ctrl-sec-arrow">▾</span></div>
+        <div class="ctrl-sec-body">
+          <div class="ctrl-row"><span class="ctrl-lbl">Horizontal X</span>
+            <div class="range-wrap"><input type="range" id="sl-posX" min="0" max="1800" value="285" oninput="updatePreview()"><span class="rv" id="rv-posX">285</span></div>
+          </div>
+          <div class="ctrl-row"><span class="ctrl-lbl">Vertikal Y</span>
+            <div class="range-wrap"><input type="range" id="sl-posY" min="0" max="900" value="308" oninput="updatePreview()"><span class="rv" id="rv-posY">308</span></div>
+          </div>
         </div>
-        <div class="ctrl-section-body">
-          <div class="ctrl-row">
-            <span class="ctrl-lbl">Horizontal X</span>
+      </div>
+
+      <!-- Pengaturan -->
+      <div class="ctrl-sec collapsed" id="sec-settings">
+        <div class="ctrl-sec-head" onclick="toggleSec('sec-settings')"><span class="ctrl-sec-title">⚙️ Pengaturan — global</span><span class="ctrl-sec-arrow">▾</span></div>
+        <div class="ctrl-sec-body">
+          <div class="ctrl-row"><span class="ctrl-lbl">Animasi</span>
+            <select class="ctrl-select" id="sl-anim" onchange="updatePreview()">
+              <option value="fade">Fade</option>
+              <option value="slide-up">Slide Up</option>
+              <option value="slide-left">Slide Left</option>
+              <option value="zoom">Zoom</option>
+            </select>
+          </div>
+          <div class="ctrl-row"><span class="ctrl-lbl">Auto-hide</span>
             <div class="range-wrap">
-              <input type="range" id="sl-posX" min="0" max="1800" value="285" oninput="updatePreview()">
-              <span class="rv" id="rv-posX">285</span>
+              <input type="range" id="sl-autohide" min="0" max="30" value="0" oninput="updatePreview()">
+              <span class="rv" id="rv-autohide">Off</span>
             </div>
           </div>
-          <div class="ctrl-row">
-            <span class="ctrl-lbl">Vertikal Y</span>
-            <div class="range-wrap">
-              <input type="range" id="sl-posY" min="0" max="900" value="308" oninput="updatePreview()">
-              <span class="rv" id="rv-posY">308</span>
-            </div>
+        </div>
+      </div>
+
+      <!-- Preset Style -->
+      <div class="ctrl-sec collapsed" id="sec-presets">
+        <div class="ctrl-sec-head" onclick="toggleSec('sec-presets')"><span class="ctrl-sec-title">💾 Preset Style</span><span class="ctrl-sec-arrow">▾</span></div>
+        <div class="ctrl-sec-body">
+          <div class="preset-save-row">
+            <input type="text" class="preset-name-inp" id="preset-name-inp" placeholder="Nama preset…">
+            <button class="preset-save-btn" onclick="savePreset()">Simpan</button>
           </div>
+          <div class="preset-list" id="presetList"><div style="font-size:11px;color:var(--mu);padding:8px 0">Belum ada preset tersimpan</div></div>
         </div>
       </div>
 
@@ -846,10 +470,11 @@ input[type=color]::-webkit-color-swatch { border: none; border-radius: 3px; }
 
 <!-- Action bar -->
 <div class="action-bar">
-  <button class="btn btn-toggle off" id="btnToggle" onclick="toggleVisible()">👁</button>
-  <button class="btn btn-send" id="btnSend" onclick="sendToOBS()">▶ Kirim ke OBS</button>
-  <button class="btn btn-save" onclick="saveToList()">💾 Simpan</button>
-  <button class="btn btn-clear" onclick="clearInputs()">✕ Clear</button>
+  <button class="btn btn-toggle off" id="btnToggle" onclick="toggleVisible()" title="Show/Hide [Space]">👁</button>
+  <button class="btn btn-undo" id="btnUndo" onclick="undo()" title="Undo [Z]" disabled>↺</button>
+  <button class="btn btn-next show" id="btnNext" onclick="nextQueue()" title="Next antrian [→]" style="display:none">→ Next</button>
+  <button class="btn btn-send" id="btnSend" onclick="sendToOBS()" title="Kirim ke OBS [Enter]">▶ Kirim ke OBS</button>
+  <button class="btn btn-save" onclick="saveToList()" title="Simpan ke daftar">💾</button>
 </div>
 
 <div id="toast"></div>
@@ -862,20 +487,32 @@ let entries   = [];
 let selIdx    = 0;
 let isVisible = false;
 let isSending = false;
+let queueMode = false;
+let queueIdx  = 0;
+let presets   = [];
+let history   = [];
+let undoStack = [];   // max 10
+let autoHideTimer  = null;
+let autoHideBar    = null;
 
 // ── INIT ──
 async function init() {
-  updatePreviewPos(); // set posisi awal
-  window.addEventListener('resize', updatePreviewPos);
+  updatePreview();
+  window.addEventListener('resize', updatePreview);
+  setupHotkeys();
   setSyncLbl('Memuat…');
   try {
     const d = await api('/api/get');
     entries = d.entries || [];
+    presets = d.presets || [];
+    history = d.history || [];
     applyStyleToUI(d.style || {});
     isVisible = (d.state || {}).visible || false;
     renderList();
     selectEntry(0, false);
     updateToggleBtn();
+    renderPresets();
+    renderHistory();
     setSyncLbl('Tersinkron');
   } catch(e) {
     setSyncLbl('Gagal terhubung');
@@ -884,7 +521,7 @@ async function init() {
 }
 
 // ══════════════════════════════════════════
-// SIDEBAR (mobile)
+// SIDEBAR & TABS
 // ══════════════════════════════════════════
 function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('open');
@@ -894,12 +531,36 @@ function closeSidebar() {
   document.getElementById('sidebar').classList.remove('open');
   document.getElementById('sidebarOverlay').classList.remove('show');
 }
+function switchTab(tab) {
+  document.querySelectorAll('.stab').forEach((b,i) => {
+    const tabs = ['names','tools','history'];
+    b.classList.toggle('active', tabs[i] === tab);
+  });
+  document.querySelectorAll('.sidebar-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+}
 
 // ══════════════════════════════════════════
-// COLLAPSIBLE SECTIONS
+// COLLAPSIBLE
 // ══════════════════════════════════════════
-function toggleSection(id) {
-  document.getElementById(id).classList.toggle('collapsed');
+function toggleSec(id) { document.getElementById(id).classList.toggle('collapsed'); }
+
+// ══════════════════════════════════════════
+// QUEUE MODE
+// ══════════════════════════════════════════
+function toggleQueueMode() {
+  queueMode = document.getElementById('queueMode').checked;
+  queueIdx  = selIdx;
+  document.getElementById('btnNext').style.display = queueMode ? 'flex' : 'none';
+  renderList();
+  toast(queueMode ? '🔢 Mode Antrian aktif' : 'Mode Antrian nonaktif', 'inf');
+}
+
+function nextQueue() {
+  if (!queueMode || entries.length === 0) return;
+  queueIdx = (queueIdx + 1) % entries.length;
+  selectEntry(queueIdx);
+  sendToOBS();
 }
 
 // ══════════════════════════════════════════
@@ -910,8 +571,9 @@ function renderList() {
   list.innerHTML = '';
   entries.forEach((e,i) => {
     const d = document.createElement('div');
-    d.className = 'name-item' + (i===selIdx?' active':'');
-    d.innerHTML = `<div class="ni-n">${e.nama}</div><div class="ni-j">${e.jabatan}</div>`;
+    const isNext = queueMode && i === (queueIdx + 1) % entries.length && entries.length > 1;
+    d.className = 'name-item' + (i===selIdx?' active':'') + (isNext?' queue-next':'');
+    d.innerHTML = `<span class="ni-num">${i+1}</span><div class="ni-body"><div class="ni-n">${e.nama}</div><div class="ni-j">${e.jabatan}</div></div>`;
     d.onclick = () => { selectEntry(i); closeSidebar(); };
     list.appendChild(d);
   });
@@ -919,6 +581,7 @@ function renderList() {
 
 function selectEntry(i, fillInput=true) {
   selIdx = i;
+  if (queueMode) queueIdx = i;
   if (fillInput && entries[i]) {
     document.getElementById('inp-nama').value    = entries[i].nama;
     document.getElementById('inp-jabatan').value = entries[i].jabatan;
@@ -930,33 +593,28 @@ function selectEntry(i, fillInput=true) {
 // ══════════════════════════════════════════
 // PREVIEW
 // ══════════════════════════════════════════
-function updatePreviewPos() {
-  // Dipanggil saat resize, hitung ulang scale faktor untuk posisi teks
-  updatePreview();
-}
-
 function updatePreview() {
   const nama    = document.getElementById('inp-nama').value;
   const jabatan = document.getElementById('inp-jabatan').value;
-  const ns      = +document.getElementById('sl-namaSize').value;
-  const js      = +document.getElementById('sl-jabatanSize').value;
-  const nc      = document.getElementById('cp-nama').value;
-  const jc      = document.getElementById('cp-jabatan').value;
-  const px      = +document.getElementById('sl-posX').value;
-  const py      = +document.getElementById('sl-posY').value;
-  const gap     = +document.getElementById('sl-gap').value;
-  const font    = document.getElementById('sl-font').value;
-  const namaW   = document.getElementById('sl-namaWeight').value;
-  const jabatanW= document.getElementById('sl-jabatanWeight').value;
+  const ns   = +document.getElementById('sl-namaSize').value;
+  const js   = +document.getElementById('sl-jabatanSize').value;
+  const nc   = document.getElementById('cp-nama').value;
+  const jc   = document.getElementById('cp-jabatan').value;
+  const px   = +document.getElementById('sl-posX').value;
+  const py   = +document.getElementById('sl-posY').value;
+  const gap  = +document.getElementById('sl-gap').value;
+  const font = document.getElementById('sl-font').value;
+  const nw   = document.getElementById('sl-namaWeight').value;
+  const jw   = document.getElementById('sl-jabatanWeight').value;
+  const ah   = +document.getElementById('sl-autohide').value;
 
-  // Update readouts
   document.getElementById('rv-namaSize').textContent    = ns + 'px';
   document.getElementById('rv-jabatanSize').textContent = js + 'px';
   document.getElementById('rv-posX').textContent = px;
   document.getElementById('rv-posY').textContent = py;
   document.getElementById('rv-gap').textContent  = gap + 'px';
+  document.getElementById('rv-autohide').textContent = ah === 0 ? 'Off' : ah + 's';
 
-  // Scale: preview frame width / 1920
   const frame = document.getElementById('pv-frame');
   const sc = frame.offsetWidth / 1920;
 
@@ -965,82 +623,83 @@ function updatePreview() {
   const pt = document.getElementById('pv-text');
 
   pn.textContent = nama;
-  pn.style.fontSize   = (ns * sc) + 'px';
-  pn.style.fontWeight = namaW;
-  pn.style.color      = nc;
-  pn.style.fontFamily = `'${font}', sans-serif`;
-
+  pn.style.cssText = `font-size:${ns*sc}px;font-weight:${nw};color:${nc};font-family:'${font}',sans-serif;`;
   pj.textContent = jabatan;
-  pj.style.fontSize   = (js * sc) + 'px';
-  pj.style.fontWeight = jabatanW;
-  pj.style.color      = jc;
-  pj.style.fontFamily = `'${font}', sans-serif`;
-
-  pt.style.left   = (px * sc) + 'px';
-  pt.style.bottom = (py * sc) + 'px';
-  pt.style.gap    = (gap * sc) + 'px';
+  pj.style.cssText = `font-size:${js*sc}px;font-weight:${jw};color:${jc};font-family:'${font}',sans-serif;`;
+  pt.style.left   = (px*sc) + 'px';
+  pt.style.bottom = (py*sc) + 'px';
+  pt.style.gap    = (gap*sc) + 'px';
   pt.classList.toggle('hidden', !isVisible);
 }
 
 // ══════════════════════════════════════════
 // COLOR
 // ══════════════════════════════════════════
-function syncHex(f) {
-  document.getElementById('ch-'+f).value = document.getElementById('cp-'+f).value;
-  updatePreview();
-}
+function syncHex(f) { document.getElementById('ch-'+f).value = document.getElementById('cp-'+f).value; updatePreview(); }
 function syncPicker(f) {
   const v = document.getElementById('ch-'+f).value;
   if (/^#[0-9a-fA-F]{6}$/.test(v)) { document.getElementById('cp-'+f).value = v; updatePreview(); }
 }
-function setColor(f,c) {
-  document.getElementById('cp-'+f).value = c;
-  document.getElementById('ch-'+f).value = c;
-  updatePreview();
-}
+function setColor(f,c) { document.getElementById('cp-'+f).value=c; document.getElementById('ch-'+f).value=c; updatePreview(); }
 
 // ══════════════════════════════════════════
-// BUILD PAYLOAD
+// BUILD PAYLOADS
 // ══════════════════════════════════════════
 function buildStyle() {
   return {
-    posX:          +document.getElementById('sl-posX').value,
-    posY:          +document.getElementById('sl-posY').value,
-    namaSize:      +document.getElementById('sl-namaSize').value,
-    jabatanSize:   +document.getElementById('sl-jabatanSize').value,
-    gap:           +document.getElementById('sl-gap').value,
-    namaColor:     document.getElementById('cp-nama').value,
-    jabatanColor:  document.getElementById('cp-jabatan').value,
-    fontFamily:    document.getElementById('sl-font').value,
-    namaWeight:    document.getElementById('sl-namaWeight').value,
+    posX: +document.getElementById('sl-posX').value,
+    posY: +document.getElementById('sl-posY').value,
+    namaSize: +document.getElementById('sl-namaSize').value,
+    jabatanSize: +document.getElementById('sl-jabatanSize').value,
+    gap: +document.getElementById('sl-gap').value,
+    namaColor: document.getElementById('cp-nama').value,
+    jabatanColor: document.getElementById('cp-jabatan').value,
+    fontFamily: document.getElementById('sl-font').value,
+    namaWeight: document.getElementById('sl-namaWeight').value,
     jabatanWeight: document.getElementById('sl-jabatanWeight').value,
+    animationType: document.getElementById('sl-anim').value,
+    autoHide: +document.getElementById('sl-autohide').value,
   };
 }
 function buildState(vis) {
-  return {
-    nama:    document.getElementById('inp-nama').value,
-    jabatan: document.getElementById('inp-jabatan').value,
-    visible: vis ?? isVisible,
-    ...buildStyle(),
-  };
+  return { nama: document.getElementById('inp-nama').value, jabatan: document.getElementById('inp-jabatan').value, visible: vis ?? isVisible, ...buildStyle() };
 }
 
 // ══════════════════════════════════════════
-// SEND / TOGGLE
+// SEND TO OBS
 // ══════════════════════════════════════════
 async function sendToOBS() {
   if (isSending) return;
+
+  // Push undo
+  pushUndo();
+
   isSending = true;
   isVisible = true;
   document.getElementById('btnSend').disabled = true;
   setSyncLbl('Mengirim…');
+
+  const state = buildState(true);
+
+  // Add to history
+  const now = new Date();
+  const hEntry = {
+    nama: state.nama, jabatan: state.jabatan,
+    time: now.toLocaleTimeString('id-ID', {hour:'2-digit',minute:'2-digit',second:'2-digit'}),
+    date: now.toLocaleDateString('id-ID')
+  };
+  history.unshift(hEntry);
+  if (history.length > 50) history.pop();
+  renderHistory();
+
   try {
-    await api('/api/set', { state: buildState(true), style: buildStyle(), entries });
+    await api('/api/set', { state, style: buildStyle(), entries, history });
     updateToggleBtn();
     updateBadge(true);
     updatePreview();
+    startAutoHidePreview(state.autoHide);
     setSyncLbl('Tersinkron');
-    toast('✓ Berhasil dikirim ke OBS', 'ok');
+    toast('✓ Dikirim ke OBS', 'ok');
   } catch(e) {
     setSyncLbl('Gagal');
     toast('Gagal mengirim ke server', 'err');
@@ -1050,6 +709,32 @@ async function sendToOBS() {
   }
 }
 
+function startAutoHidePreview(sec) {
+  const bar = document.getElementById('pv-autohide-bar');
+  if (autoHideTimer) { clearTimeout(autoHideTimer); clearInterval(autoHideBar); }
+  if (!sec || sec === 0) { bar.style.display = 'none'; return; }
+
+  bar.style.display = 'block';
+  bar.style.transition = 'none';
+  bar.style.width = '100%';
+
+  setTimeout(() => {
+    bar.style.transition = `width ${sec}s linear`;
+    bar.style.width = '0%';
+  }, 50);
+
+  autoHideTimer = setTimeout(() => {
+    bar.style.display = 'none';
+    isVisible = false;
+    updateToggleBtn();
+    updatePreview();
+    updateBadge(false);
+  }, sec * 1000);
+}
+
+// ══════════════════════════════════════════
+// TOGGLE VISIBLE
+// ══════════════════════════════════════════
 async function toggleVisible() {
   isVisible = !isVisible;
   updateToggleBtn();
@@ -1063,19 +748,42 @@ async function toggleVisible() {
 
 function updateToggleBtn() {
   const btn = document.getElementById('btnToggle');
-  if (isVisible) {
-    btn.textContent = '🚫';
-    btn.title = 'Sembunyikan overlay';
-    btn.classList.remove('off');
-  } else {
-    btn.textContent = '👁';
-    btn.title = 'Tampilkan overlay';
-    btn.classList.add('off');
-  }
+  btn.textContent = isVisible ? '🚫' : '👁';
+  btn.title = isVisible ? 'Sembunyikan [Space]' : 'Tampilkan [Space]';
+  btn.classList.toggle('off', !isVisible);
 }
 function updateBadge(on) {
   document.getElementById('liveBadge').classList.toggle('on', on);
   document.getElementById('liveText').textContent = on ? 'LIVE' : 'OFF';
+}
+
+// ══════════════════════════════════════════
+// UNDO
+// ══════════════════════════════════════════
+function pushUndo() {
+  undoStack.push({ state: buildState(), style: buildStyle() });
+  if (undoStack.length > 10) undoStack.shift();
+  document.getElementById('btnUndo').disabled = false;
+}
+
+async function undo() {
+  if (undoStack.length === 0) return;
+  const prev = undoStack.pop();
+  document.getElementById('btnUndo').disabled = undoStack.length === 0;
+
+  // Restore inputs
+  document.getElementById('inp-nama').value    = prev.state.nama;
+  document.getElementById('inp-jabatan').value = prev.state.jabatan;
+  applyStyleToUI(prev.style);
+  isVisible = prev.state.visible;
+  updateToggleBtn();
+  updatePreview();
+
+  try {
+    await api('/api/set', { state: prev.state, style: prev.style });
+    updateBadge(prev.state.visible);
+    toast('↺ Undo berhasil', 'inf');
+  } catch(e) { toast('Gagal undo', 'err'); }
 }
 
 // ══════════════════════════════════════════
@@ -1088,10 +796,8 @@ async function saveToList() {
   if (selIdx < entries.length) { entries[selIdx] = { nama, jabatan }; }
   else { entries.push({ nama, jabatan }); selIdx = entries.length-1; }
   renderList();
-  try {
-    await api('/api/set', { entries });
-    toast('💾 Tersimpan', 'ok');
-  } catch(e) { toast('Gagal simpan ke server', 'err'); }
+  try { await api('/api/set', { entries }); toast('💾 Tersimpan', 'ok'); }
+  catch(e) { toast('Gagal simpan ke server', 'err'); }
 }
 
 function addNew() {
@@ -1111,25 +817,166 @@ async function deleteSelected() {
 }
 
 function clearInputs() {
-  document.getElementById('inp-nama').value    = '';
+  document.getElementById('inp-nama').value = '';
   document.getElementById('inp-jabatan').value = '';
   updatePreview();
+}
+
+// ══════════════════════════════════════════
+// PRESET STYLE
+// ══════════════════════════════════════════
+function renderPresets() {
+  const list = document.getElementById('presetList');
+  if (presets.length === 0) {
+    list.innerHTML = '<div style="font-size:11px;color:var(--mu);padding:8px 0">Belum ada preset tersimpan</div>';
+    return;
+  }
+  list.innerHTML = '';
+  presets.forEach((p,i) => {
+    const d = document.createElement('div');
+    d.className = 'preset-card';
+    d.innerHTML = `<div class="preset-card-name">${p.name}</div><div class="preset-card-meta">${p.style.fontFamily} · ${p.style.namaSize}px</div><button class="preset-card-del" onclick="deletePreset(${i});event.stopPropagation()">✕</button>`;
+    d.onclick = () => { applyStyleToUI(p.style); toast(`✓ Preset "${p.name}" diterapkan`, 'ok'); };
+    list.appendChild(d);
+  });
+}
+
+async function savePreset() {
+  const name = document.getElementById('preset-name-inp').value.trim();
+  if (!name) return;
+  presets.push({ name, style: buildStyle() });
+  document.getElementById('preset-name-inp').value = '';
+  renderPresets();
+  try { await api('/api/set', { presets }); toast('💾 Preset tersimpan', 'ok'); }
+  catch(e) { toast('Gagal simpan preset', 'err'); }
+}
+
+async function deletePreset(i) {
+  presets.splice(i, 1);
+  renderPresets();
+  try { await api('/api/set', { presets }); } catch(e) {}
+}
+
+// ══════════════════════════════════════════
+// HISTORY
+// ══════════════════════════════════════════
+function renderHistory() {
+  const list = document.getElementById('histList');
+  document.getElementById('histCount').textContent = history.length;
+  if (history.length === 0) {
+    list.innerHTML = '<div class="hist-empty">Belum ada riwayat</div>';
+    return;
+  }
+  list.innerHTML = '';
+  history.forEach(h => {
+    const d = document.createElement('div');
+    d.className = 'hist-item';
+    d.innerHTML = `<div class="hist-n">${h.nama}</div><div class="hist-j">${h.jabatan}</div><div class="hist-t">${h.date} · ${h.time}</div>`;
+    list.appendChild(d);
+  });
+}
+
+async function clearHistory() {
+  history = [];
+  renderHistory();
+  try { await api('/api/set', { history }); toast('🗑 History dihapus', 'ok'); } catch(e) {}
+}
+
+// ══════════════════════════════════════════
+// IMPORT / EXPORT CSV
+// ══════════════════════════════════════════
+function exportCSV() {
+  const rows = ['nama,jabatan', ...entries.map(e => `"${e.nama}","${e.jabatan}"`)];
+  const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'lowerthird-names.csv';
+  a.click();
+  toast('💾 CSV diunduh', 'ok');
+}
+
+async function importCSV(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const text = await file.text();
+  const lines = text.split('\n').filter(l => l.trim());
+  const newEntries = [];
+  lines.forEach(line => {
+    // skip header
+    if (line.toLowerCase().startsWith('nama')) return;
+    const parts = line.split(',').map(p => p.trim().replace(/^"|"$/g, ''));
+    if (parts.length >= 2 && parts[0]) {
+      newEntries.push({ nama: parts[0], jabatan: parts[1] || '' });
+    }
+  });
+  if (newEntries.length === 0) { toast('Tidak ada data valid di CSV', 'err'); return; }
+
+  const replace = confirm(`Ditemukan ${newEntries.length} nama.\nGanti semua daftar? (Cancel = tambahkan ke daftar yang ada)`);
+  entries = replace ? newEntries : [...entries, ...newEntries];
+  selIdx = 0;
+  renderList();
+  selectEntry(0);
+  try {
+    await api('/api/set', { entries });
+    toast(`✓ ${newEntries.length} nama ${replace ? 'diganti' : 'ditambahkan'}`, 'ok');
+  } catch(e) { toast('Gagal simpan ke server', 'err'); }
+  event.target.value = '';
+}
+
+// ══════════════════════════════════════════
+// RESET STYLE
+// ══════════════════════════════════════════
+function resetStyle() {
+  applyStyleToUI({
+    posX:285, posY:308, namaSize:38, jabatanSize:26, gap:4,
+    namaColor:'#ffffff', jabatanColor:'#e0f0ff',
+    fontFamily:'Outfit', namaWeight:'700', jabatanWeight:'300',
+    animationType:'fade', autoHide:0,
+  });
+  toast('↺ Style direset', 'inf');
 }
 
 // ══════════════════════════════════════════
 // APPLY STYLE FROM SERVER
 // ══════════════════════════════════════════
 function applyStyleToUI(s) {
-  document.getElementById('sl-posX').value           = s.posX          ?? 285;
-  document.getElementById('sl-posY').value           = s.posY          ?? 308;
-  document.getElementById('sl-namaSize').value       = s.namaSize      ?? 38;
-  document.getElementById('sl-jabatanSize').value    = s.jabatanSize   ?? 26;
-  document.getElementById('sl-gap').value            = s.gap           ?? 4;
-  document.getElementById('sl-namaWeight').value     = s.namaWeight    || '700';
-  document.getElementById('sl-jabatanWeight').value  = s.jabatanWeight || '300';
-  if (s.fontFamily) document.getElementById('sl-font').value = s.fontFamily;
+  const set = (id,v) => { const el=document.getElementById(id); if(el) el.value=v; };
+  set('sl-posX',        s.posX        ?? 285);
+  set('sl-posY',        s.posY        ?? 308);
+  set('sl-namaSize',    s.namaSize    ?? 38);
+  set('sl-jabatanSize', s.jabatanSize ?? 26);
+  set('sl-gap',         s.gap         ?? 4);
+  set('sl-namaWeight',  s.namaWeight  || '700');
+  set('sl-jabatanWeight', s.jabatanWeight || '300');
+  set('sl-anim',        s.animationType || 'fade');
+  set('sl-autohide',    s.autoHide    ?? 0);
+  if (s.fontFamily) set('sl-font', s.fontFamily);
   setColor('nama',    s.namaColor    || '#ffffff');
   setColor('jabatan', s.jabatanColor || '#e0f0ff');
+  updatePreview();
+}
+
+// ══════════════════════════════════════════
+// HOTKEYS
+// ══════════════════════════════════════════
+function setupHotkeys() {
+  document.addEventListener('keydown', e => {
+    const tag = document.activeElement.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
+    // 1-9: pilih nama
+    if (e.key >= '1' && e.key <= '9') {
+      const i = parseInt(e.key) - 1;
+      if (i < entries.length) { selectEntry(i); toast(`Dipilih: ${entries[i].nama}`, 'inf'); }
+      return;
+    }
+    switch(e.key) {
+      case ' ':       e.preventDefault(); toggleVisible(); break;
+      case 'Enter':   e.preventDefault(); sendToOBS(); break;
+      case 'ArrowRight': if (queueMode) nextQueue(); break;
+      case 'z': case 'Z': undo(); break;
+    }
+  });
 }
 
 // ══════════════════════════════════════════
@@ -1150,7 +997,7 @@ function toast(msg, type='ok') {
   el.textContent = msg;
   el.className = 'show '+type;
   clearTimeout(el._t);
-  el._t = setTimeout(() => { el.className = ''; }, 2500);
+  el._t = setTimeout(() => { el.className=''; }, 2500);
 }
 
 init();
