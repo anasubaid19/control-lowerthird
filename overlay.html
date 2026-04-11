@@ -7,46 +7,87 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,600;9..40,700&family=Plus+Jakarta+Sans:wght@300;400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
-  body { width:1920px; height:1080px; background:transparent; overflow:hidden; }
 
-  #lt-wrapper { position:absolute; inset:0; pointer-events:none; }
+  body {
+    width: 1920px;
+    height: 1080px;
+    background: transparent;
+    overflow: hidden;
+  }
+
+  #lt-wrapper {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
 
   #lt-image {
-    position:absolute; bottom:0; left:0;
-    width:100%; height:100%; object-fit:cover;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   #lt-text {
-    position:absolute;
-    display:flex; flex-direction:column;
-    opacity:0;
-    pointer-events:none;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    /* Default: tersembunyi, opacity dikendalikan sepenuhnya oleh JS */
+    opacity: 0;
+    pointer-events: none;
   }
 
   #lt-nama, #lt-jabatan {
-    white-space:nowrap;
-    text-shadow:0 1px 6px rgba(0,0,0,0.5);
-    line-height:1.2; display:block;
+    white-space: nowrap;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.5);
+    line-height: 1.2;
+    display: block;
   }
 
   /* ── FADE ── */
-  @keyframes fadeIn  { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-  @keyframes fadeOut { from{opacity:1;transform:translateY(0)} to{opacity:0;transform:translateY(-6px)} }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeOut {
+    from { opacity: 1; transform: translateY(0); }
+    to   { opacity: 0; transform: translateY(-6px); }
+  }
 
   /* ── SLIDE UP ── */
-  @keyframes slideUpIn  { from{opacity:0;transform:translateY(40px)} to{opacity:1;transform:translateY(0)} }
-  @keyframes slideUpOut { from{opacity:1;transform:translateY(0)} to{opacity:0;transform:translateY(-30px)} }
+  @keyframes slideUpIn {
+    from { opacity: 0; transform: translateY(40px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes slideUpOut {
+    from { opacity: 1; transform: translateY(0); }
+    to   { opacity: 0; transform: translateY(-30px); }
+  }
 
   /* ── SLIDE LEFT ── */
-  @keyframes slideLeftIn  { from{opacity:0;transform:translateX(-60px)} to{opacity:1;transform:translateX(0)} }
-  @keyframes slideLeftOut { from{opacity:1;transform:translateX(0)} to{opacity:0;transform:translateX(60px)} }
+  @keyframes slideLeftIn {
+    from { opacity: 0; transform: translateX(-60px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes slideLeftOut {
+    from { opacity: 1; transform: translateX(0); }
+    to   { opacity: 0; transform: translateX(60px); }
+  }
 
   /* ── ZOOM ── */
-  @keyframes zoomIn  { from{opacity:0;transform:scale(0.85)} to{opacity:1;transform:scale(1)} }
-  @keyframes zoomOut { from{opacity:1;transform:scale(1)} to{opacity:0;transform:scale(1.1)} }
+  @keyframes zoomIn {
+    from { opacity: 0; transform: scale(0.85); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  @keyframes zoomOut {
+    from { opacity: 1; transform: scale(1); }
+    to   { opacity: 0; transform: scale(1.1); }
+  }
 </style>
 </head>
 <body>
+
 <div id="lt-wrapper">
   <img id="lt-image" src="/lowerthird.png" alt="">
   <div id="lt-text">
@@ -60,112 +101,171 @@
   const ltNama    = document.getElementById('lt-nama');
   const ltJabatan = document.getElementById('lt-jabatan');
 
-  let lastKey    = null;
-  let autoTimer  = null;
-  let isShowing  = false;
+  // ── STATE ──
+  let lastKey   = null;
+  let isShowing = false;
+  let autoTimer = null;
 
+  // ID untuk membatalkan callback animateOut yang pending
+  // Jika animateIn dipanggil sebelum callback animateOut selesai,
+  // callback lama akan dibatalkan dan tidak akan mengubah opacity
+  let callbackId = 0;
+
+  // ── ANIMATION MAPS ──
   const ANIMS = {
-    fade:       { in: 'fadeIn',      out: 'fadeOut'     },
-    'slide-up': { in: 'slideUpIn',   out: 'slideUpOut'  },
-    'slide-left':{ in: 'slideLeftIn', out: 'slideLeftOut'},
-    zoom:       { in: 'zoomIn',      out: 'zoomOut'     },
+    'fade':       { in: 'fadeIn',      out: 'fadeOut',      durIn: 400, durOut: 320 },
+    'slide-up':   { in: 'slideUpIn',   out: 'slideUpOut',   durIn: 450, durOut: 300 },
+    'slide-left': { in: 'slideLeftIn', out: 'slideLeftOut', durIn: 450, durOut: 300 },
+    'zoom':       { in: 'zoomIn',      out: 'zoomOut',      durIn: 400, durOut: 300 },
   };
-  const DUR_IN  = 400;
-  const DUR_OUT = 320;
 
-  async function poll() {
-    try {
-      const res = await fetch('/api/get');
-      if (!res.ok) return;
-      const { state } = await res.json();
-      if (!state) return;
-      const key = JSON.stringify(state);
-      if (key === lastKey) return;
-      lastKey = key;
-      applyState(state);
-    } catch(e) {}
+  function getAnim(type) {
+    return ANIMS[type] || ANIMS['fade'];
   }
 
-  function getAnimName(type, dir) {
-    const a = ANIMS[type] || ANIMS.fade;
-    return a[dir];
+  // ── FIX: force reflow sebelum set animasi baru ──
+  // Tanpa ini, browser tidak mendeteksi perubahan animasi dan tidak me-restart-nya
+  function resetAnimation(animationValue) {
+    ltText.style.animation = 'none';
+    void ltText.offsetWidth; // force reflow — ini yang memaksa browser restart animasi
+    ltText.style.animation = animationValue;
   }
 
-  function applyStyle(s) {
-    ltText.style.left        = (s.posX ?? 285) + 'px';
-    ltText.style.bottom      = (s.posY ?? 308) + 'px';
-    ltText.style.gap         = (s.gap  ?? 4)   + 'px';
-    const font = s.fontFamily || 'Outfit';
-    ltNama.style.fontSize    = (s.namaSize    ?? 38) + 'px';
-    ltNama.style.fontWeight  =  s.namaWeight  || '700';
-    ltNama.style.color       =  s.namaColor   || '#ffffff';
-    ltNama.style.fontFamily  = `'${font}', sans-serif`;
-    ltJabatan.style.fontSize    = (s.jabatanSize   ?? 26) + 'px';
-    ltJabatan.style.fontWeight  =  s.jabatanWeight || '300';
-    ltJabatan.style.color       =  s.jabatanColor  || '#e0f0ff';
-    ltJabatan.style.fontFamily  = `'${font}', sans-serif`;
-  }
-
+  // ── ANIMATE IN ──
   function animateIn(type) {
-    const name = getAnimName(type, 'in');
-    ltText.style.animation = `${name} ${DUR_IN}ms ease forwards`;
+    // Batalkan callback animateOut yang mungkin masih pending
+    callbackId++;
+
+    // FIX: clear inline opacity dulu sebelum animasi dimulai
+    // Tanpa ini, opacity '0' dari animateOut callback akan tetap
+    // menimpa animasi meski animasi seharusnya mengubah opacity ke 1
+    ltText.style.opacity = '';
+
+    const a = getAnim(type);
+    resetAnimation(`${a.in} ${a.durIn}ms ease forwards`);
     isShowing = true;
   }
 
+  // ── ANIMATE OUT ──
   function animateOut(type, cb) {
-    const name = getAnimName(type, 'out');
-    ltText.style.animation = `${name} ${DUR_OUT}ms ease forwards`;
-    isShowing = false;
-    setTimeout(cb, DUR_OUT);
+    const a  = getAnim(type);
+    const id = ++callbackId; // ambil ID saat ini
+
+    resetAnimation(`${a.out} ${a.durOut}ms ease forwards`);
+
+    // isShowing di-set false SETELAH animasi selesai (bukan langsung)
+    // supaya tidak ada race condition jika poll datang saat animasi masih berjalan
+    setTimeout(() => {
+      // Hanya jalankan callback jika tidak ada animateIn yang dipanggil di antaranya
+      if (id !== callbackId) return;
+
+      isShowing = false;
+      // Set inline opacity setelah animasi selesai agar elemen benar-benar tersembunyi
+      // bahkan jika browser menghapus animation fill di kemudian hari
+      ltText.style.opacity = '0';
+
+      if (typeof cb === 'function') cb();
+    }, a.durOut + 20); // +20ms buffer untuk memastikan animasi benar-benar selesai
   }
 
+  // ── APPLY STYLE ──
+  function applyStyle(s) {
+    ltText.style.left   = (s.posX ?? 285) + 'px';
+    ltText.style.bottom = (s.posY ?? 308) + 'px';
+    ltText.style.gap    = (s.gap  ?? 4)   + 'px';
+
+    const font = s.fontFamily || 'Outfit';
+
+    ltNama.style.fontSize   = (s.namaSize   ?? 38) + 'px';
+    ltNama.style.fontWeight = s.namaWeight  || '700';
+    ltNama.style.color      = s.namaColor   || '#ffffff';
+    ltNama.style.fontFamily = `'${font}', sans-serif`;
+
+    ltJabatan.style.fontSize   = (s.jabatanSize   ?? 26) + 'px';
+    ltJabatan.style.fontWeight = s.jabatanWeight  || '300';
+    ltJabatan.style.color      = s.jabatanColor   || '#e0f0ff';
+    ltJabatan.style.fontFamily = `'${font}', sans-serif`;
+  }
+
+  // ── APPLY STATE (dipanggil setiap kali data berubah) ──
   function applyState(s) {
+    // Terapkan style posisi & font dulu (tidak mempengaruhi visibility)
     applyStyle(s);
+
     const anim     = s.animationType || 'fade';
     const autoHide = s.autoHide || 0;
-    const textChanged = ltNama.textContent !== (s.nama||'') || ltJabatan.textContent !== (s.jabatan||'');
+    const textChanged = ltNama.textContent !== (s.nama || '')
+                     || ltJabatan.textContent !== (s.jabatan || '');
 
-    // Clear auto-hide timer
-    if (autoTimer) { clearTimeout(autoTimer); autoTimer = null; }
+    // Clear auto-hide timer yang sedang berjalan
+    if (autoTimer) {
+      clearTimeout(autoTimer);
+      autoTimer = null;
+    }
 
+    // ── KASUS: SEMBUNYIKAN ──
     if (!s.visible) {
       if (isShowing) {
-        animateOut(anim, () => { ltText.style.opacity = '0'; });
+        animateOut(anim);
       }
+      // Jika sudah tersembunyi, tidak perlu melakukan apa-apa
       return;
     }
 
+    // ── KASUS: TAMPILKAN ──
     if (!isShowing) {
-      // Tampilkan langsung
+      // Belum tampil → langsung animasi masuk
       ltNama.textContent    = s.nama    || '';
       ltJabatan.textContent = s.jabatan || '';
       animateIn(anim);
     } else if (textChanged) {
-      // Ganti teks: out → update → in
+      // Sudah tampil tapi teks berubah → out dulu, lalu in dengan teks baru
       animateOut(anim, () => {
         ltNama.textContent    = s.nama    || '';
         ltJabatan.textContent = s.jabatan || '';
         animateIn(anim);
-        // Re-set auto-hide setelah animasi in
+
+        // Set ulang auto-hide setelah animasi in
         if (autoHide > 0) {
           autoTimer = setTimeout(() => {
-            animateOut(anim, () => { ltText.style.opacity = '0'; });
+            animateOut(anim);
           }, autoHide * 1000);
         }
       });
-      return;
+      return; // keluar lebih awal, auto-hide diset di callback
     }
+    // Jika isShowing = true dan teks tidak berubah → tidak perlu animasi ulang
 
-    // Auto-hide
+    // ── AUTO-HIDE ──
     if (autoHide > 0) {
       autoTimer = setTimeout(() => {
-        animateOut(anim, () => { ltText.style.opacity = '0'; });
+        animateOut(anim);
       }, autoHide * 1000);
     }
   }
 
+  // ── POLL ──
+  async function poll() {
+    try {
+      const res = await fetch('/api/get');
+      if (!res.ok) return;
+
+      const { state } = await res.json();
+      if (!state) return;
+
+      const key = JSON.stringify(state);
+      if (key === lastKey) return; // tidak ada perubahan
+
+      lastKey = key;
+      applyState(state);
+    } catch (e) {
+      // Abaikan error jaringan, coba lagi di poll berikutnya
+    }
+  }
+
+  // Poll tiap 800ms
   setInterval(poll, 800);
-  poll();
+  poll(); // panggil langsung saat load
 </script>
 </body>
 </html>
