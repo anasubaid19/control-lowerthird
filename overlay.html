@@ -27,6 +27,8 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.4s ease;
   }
 
   #lt-text {
@@ -100,6 +102,7 @@
   const ltText    = document.getElementById('lt-text');
   const ltNama    = document.getElementById('lt-nama');
   const ltJabatan = document.getElementById('lt-jabatan');
+  const ltImage   = document.getElementById('lt-image');
 
   // ── STATE ──
   let lastKey   = null;
@@ -136,10 +139,11 @@
     // Batalkan callback animateOut yang mungkin masih pending
     callbackId++;
 
-    // FIX: clear inline opacity dulu sebelum animasi dimulai
-    // Tanpa ini, opacity '0' dari animateOut callback akan tetap
-    // menimpa animasi meski animasi seharusnya mengubah opacity ke 1
+    // Clear inline opacity agar animasi bisa mengubah opacity ke 1
     ltText.style.opacity = '';
+
+    // Tampilkan gambar bersama teks
+    ltImage.style.opacity = '1';
 
     const a = getAnim(type);
     resetAnimation(`${a.in} ${a.durIn}ms ease forwards`);
@@ -149,23 +153,21 @@
   // ── ANIMATE OUT ──
   function animateOut(type, cb) {
     const a  = getAnim(type);
-    const id = ++callbackId; // ambil ID saat ini
+    const id = ++callbackId;
+
+    // Sembunyikan gambar bersama teks (fade via CSS transition)
+    ltImage.style.opacity = '0';
 
     resetAnimation(`${a.out} ${a.durOut}ms ease forwards`);
 
-    // isShowing di-set false SETELAH animasi selesai (bukan langsung)
-    // supaya tidak ada race condition jika poll datang saat animasi masih berjalan
     setTimeout(() => {
-      // Hanya jalankan callback jika tidak ada animateIn yang dipanggil di antaranya
       if (id !== callbackId) return;
 
       isShowing = false;
-      // Set inline opacity setelah animasi selesai agar elemen benar-benar tersembunyi
-      // bahkan jika browser menghapus animation fill di kemudian hari
       ltText.style.opacity = '0';
 
       if (typeof cb === 'function') cb();
-    }, a.durOut + 20); // +20ms buffer untuk memastikan animasi benar-benar selesai
+    }, a.durOut + 20);
   }
 
   // ── APPLY STYLE ──
