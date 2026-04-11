@@ -136,15 +136,8 @@
 
   // ── ANIMATE IN ──
   function animateIn(type) {
-    // Batalkan callback animateOut yang mungkin masih pending
     callbackId++;
-
-    // Clear inline opacity agar animasi bisa mengubah opacity ke 1
-    ltText.style.opacity = '';
-
-    // Tampilkan gambar bersama teks
-    ltImage.style.opacity = '1';
-
+    ltText.style.opacity = ''; // clear inline opacity
     const a = getAnim(type);
     resetAnimation(`${a.in} ${a.durIn}ms ease forwards`);
     isShowing = true;
@@ -154,18 +147,11 @@
   function animateOut(type, cb) {
     const a  = getAnim(type);
     const id = ++callbackId;
-
-    // Sembunyikan gambar bersama teks (fade via CSS transition)
-    ltImage.style.opacity = '0';
-
     resetAnimation(`${a.out} ${a.durOut}ms ease forwards`);
-
     setTimeout(() => {
       if (id !== callbackId) return;
-
       isShowing = false;
       ltText.style.opacity = '0';
-
       if (typeof cb === 'function') cb();
     }, a.durOut + 20);
   }
@@ -189,9 +175,8 @@
     ltJabatan.style.fontFamily = `'${font}', sans-serif`;
   }
 
-  // ── APPLY STATE (dipanggil setiap kali data berubah) ──
+  // ── APPLY STATE ──
   function applyState(s) {
-    // Terapkan style posisi & font dulu (tidak mempengaruhi visibility)
     applyStyle(s);
 
     const anim     = s.animationType || 'fade';
@@ -199,50 +184,37 @@
     const textChanged = ltNama.textContent !== (s.nama || '')
                      || ltJabatan.textContent !== (s.jabatan || '');
 
-    // Clear auto-hide timer yang sedang berjalan
-    if (autoTimer) {
-      clearTimeout(autoTimer);
-      autoTimer = null;
-    }
+    if (autoTimer) { clearTimeout(autoTimer); autoTimer = null; }
 
-    // ── KASUS: SEMBUNYIKAN ──
+    // Image: langsung set dari s.visible, tidak bergantung pada isShowing
+    // Ini memastikan image selalu sinkron dengan state, apapun kondisi animasi
+    ltImage.style.opacity = s.visible ? '1' : '0';
+
+    // ── SEMBUNYIKAN ──
     if (!s.visible) {
-      if (isShowing) {
-        animateOut(anim);
-      }
-      // Jika sudah tersembunyi, tidak perlu melakukan apa-apa
+      if (isShowing) animateOut(anim);
       return;
     }
 
-    // ── KASUS: TAMPILKAN ──
+    // ── TAMPILKAN ──
     if (!isShowing) {
-      // Belum tampil → langsung animasi masuk
       ltNama.textContent    = s.nama    || '';
       ltJabatan.textContent = s.jabatan || '';
       animateIn(anim);
     } else if (textChanged) {
-      // Sudah tampil tapi teks berubah → out dulu, lalu in dengan teks baru
       animateOut(anim, () => {
         ltNama.textContent    = s.nama    || '';
         ltJabatan.textContent = s.jabatan || '';
         animateIn(anim);
-
-        // Set ulang auto-hide setelah animasi in
         if (autoHide > 0) {
-          autoTimer = setTimeout(() => {
-            animateOut(anim);
-          }, autoHide * 1000);
+          autoTimer = setTimeout(() => animateOut(anim), autoHide * 1000);
         }
       });
-      return; // keluar lebih awal, auto-hide diset di callback
+      return;
     }
-    // Jika isShowing = true dan teks tidak berubah → tidak perlu animasi ulang
 
-    // ── AUTO-HIDE ──
     if (autoHide > 0) {
-      autoTimer = setTimeout(() => {
-        animateOut(anim);
-      }, autoHide * 1000);
+      autoTimer = setTimeout(() => animateOut(anim), autoHide * 1000);
     }
   }
 
